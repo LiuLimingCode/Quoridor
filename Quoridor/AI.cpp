@@ -1,27 +1,28 @@
+#include "stdafx.h"
 #include "AI.h"
-#include "GameService.h"
+#include "GameData.h"
 #include <sys/timeb.h>
 #include <algorithm>
 
-AI::AI(int depth, long time, GameService * game)
+AI::AI(int depth, int id, long time, GameData* gameData)
 {
-	_depth = depth;
-	_time = time;
-	_game = game;
+	mThinkDepth = depth;
+	mSelfID = id;
+	mRivalID = 1 - id;
+	mTimeLimited = time;
+	mGaveData = gameData;
 	isRuning = false;
 }
 
-std::pair<Vec2, int> AI::getNextMove(void)
+Order AI::getNextMove(void)
 {
 	isRuning = true;
 	long long startTime = getSystemTime();
 
 	std::vector<MoveNode> moveVt;
 
-	std::vector<Vec2> moves = _game->getMoves(_game->_posVt[Players::COMPUTER]);
-	std::vector<std::pair<Vec2, int>> wallMoves = _game->getWallMoves(COMPUTER);
-
-//	log("%d %d", moves.size(), wallMoves.size());
+	std::vector<CPoint> moves = mGaveData->getMoveVaild(mSelfID);
+	std::vector<std::pair<CPoint, int>> wallMoves = mGaveData->getWallVaild(mSelfID);
 
 	for (auto move : moves)
 	{
@@ -38,11 +39,11 @@ std::pair<Vec2, int> AI::getNextMove(void)
 	auto size = moveVt.size();
 	MoveNode ans;
 
-	for (int i_depth = 1; i_depth <= _depth; i_depth++)
+	for (int i_depth = 1; i_depth <= mThinkDepth; i_depth++)
 	{
 		long long timeLen = getSystemTime() - startTime;
 
-		if (timeLen >= _time)
+		if (timeLen >= mTimeLimited)
 		{
 //			log("%fs %d层", timeLen / 1000.0, i_depth);
 			break;
@@ -54,29 +55,21 @@ std::pair<Vec2, int> AI::getNextMove(void)
 
 		for (size_t i = 0; i < size; i++)
 		{
-			int x = moveVt[i].pos.x;
-			int y = moveVt[i].pos.y;
+			int x = moveVt[i].order.point.x;
+			int y = moveVt[i].order.point.y;
 
-			if (moveVt[i].moveType == 2)//表示走子
+			if (moveVt[i].order.type == 2)//表示走子
 			{
-				auto tempPos = _game->_posVt[COMPUTER];
-				_game->_board[(int)tempPos.x][(int)tempPos.y] = false;
-
-				_game->_posVt[COMPUTER] = Vec2(x, y);
-				_game->_board[x][y] = true;
-
-				val = -alphaBeta(i_depth, PLAYER, -beta, -alpha);
-
-				_game->_board[x][y] = false;
-				_game->_posVt[COMPUTER] = tempPos;
-				_game->_board[(int)_game->_posVt[COMPUTER].x][(int)_game->_posVt[COMPUTER].y] = true;
+				auto tempPos = mGaveData->getCurrentPosition(mSelfID);
+				mGaveData->setMove(mSelfID, x, y);
+				val = -alphaBeta(i_depth, mRivalID, -beta, -alpha);
+				mGaveData->setMove(mSelfID, tempPos.x, tempPos.y);
 			}
 			else
 			{
-				_game->_wall[moveVt[i].moveType][x][y] = COMPUTER + 1;
-				val = -alphaBeta(i_depth, PLAYER, -beta, -alpha);
-
-				_game->_wall[moveVt[i].moveType][x][y] = 0;
+				mGaveData->setWall(mSelfID, moveVt[i].order.type, x, y);
+				val = -alphaBeta(i_depth, mRivalID, -beta, -alpha);
+				mGaveData->resetWall(moveVt[i].order.type, x, y);
 			}
 
 			if (val > alpha)
@@ -88,61 +81,49 @@ std::pair<Vec2, int> AI::getNextMove(void)
 		}
 
 		ans = moveNode;
-//		log("val %d  move type=%d x=%d y=%d", val, ans.moveType, (int)ans.pos.x, (int)ans.pos.y);
 
 		std::sort(moveVt.begin(), moveVt.end());
 	}
 
 	isRuning = false;
 
-	return std::make_pair(ans.pos, ans.moveType);
+	return Order(ans.order.type, ans.order.point);
 }
 
-long AI::alphaBeta(int depth, int playerId, long alpha, long beta)
+long AI::alphaBeta(int depth, int player, long alpha, long beta)
 {
 	if (depth == 0)
 	{
 		long score = evaluate();
-		if (playerId == 0)
+		if (player == mRivalID)
 			score = -score;
 
 		return score;
 	}
 
-	std::vector<Vec2> moves = _game->getMoves(_game->_posVt[playerId]);
+	std::vector<CPoint> moves = mGaveData->getMoveVaild(player);
 
 	long val;
 
 	for (auto move : moves)
 	{
-		Vec2 tpos = _game->_posVt[playerId];
-		_game->_board[(int)_game->_posVt[playerId].x][(int)_game->_posVt[playerId].y] = false;
-
-		_game->_posVt[playerId] = move;
-		_game->_board[(int)_game->_posVt[playerId].x][(int)_game->_posVt[playerId].y] = true;
-
-		val = -alphaBeta(depth - 1, 1 - playerId, -beta, -alpha);
-
-		_game->_board[(int)_game->_posVt[playerId].x][(int)_game->_posVt[playerId].y] = false;
-
-		_game->_posVt[playerId] = tpos;
-		_game->_board[(int)_game->_posVt[playerId].x][(int)_game->_posVt[playerId].y] = true;
-
+		CPoint tempPos = mGaveData->getCurrentPosition(player);
+		mGaveData->setMove(player, move.x, move.y);
+		val = -alphaBeta(depth - 1, 1 - player, -beta, -alpha);
+		mGaveData->setMove(player, tempPos.x, tempPos.y);
 		if (val >= beta)
 			return beta;
 		if (val > alpha)
 			alpha = val;
 	}
 
-	std::vector<std::pair<Vec2, int>> wallMoves = _game->getWallMoves(playerId);
+	std::vector<std::pair<CPoint, int>> wallMoves = mGaveData->getWallVaild(player);
 
 	for (auto wallMove : wallMoves)
 	{
-		_game->_wall[wallMove.second][(int)wallMove.first.x][(int)wallMove.first.y] = playerId + 1;
-
-		val = -alphaBeta(depth - 1, 1 - playerId, -beta, -alpha);
-
-		_game->_wall[wallMove.second][(int)wallMove.first.x][(int)wallMove.first.y] = 0;
+		mGaveData->setWall(player, wallMove.second, (int)wallMove.first.x, (int)wallMove.first.y);
+		val = -alphaBeta(depth - 1, 1 - player, -beta, -alpha);
+		mGaveData->resetWall(wallMove.second, (int)wallMove.first.x, (int)wallMove.first.y);
 
 		if (val >= beta)
 			return beta;
@@ -155,19 +136,18 @@ long AI::alphaBeta(int depth, int playerId, long alpha, long beta)
 
 int AI::evaluate(void)
 {
-	int cmpShortLength = _game->getShortPath(_game->_posVt[COMPUTER], COMPUTER);
-	int meShortLength = _game->getShortPath(_game->_posVt[PLAYER], PLAYER);
-	int cmpWallNum = _game->_wallNumVt[COMPUTER];
-	int meWallNum = _game->_wallNumVt[PLAYER];
+	int selfShortLength = mGaveData->getShortPath(mSelfID, mGaveData->getCurrentPosition(mSelfID));
+	int rivalShortLength = mGaveData->getShortPath(mRivalID, mGaveData->getCurrentPosition(mRivalID));
+	int selfWallNum = mGaveData->getCurrentWallNum(mSelfID);
+	int rivalWallNum = mGaveData->getCurrentWallNum(mRivalID);
 
-	if (cmpShortLength == 0)
+	if (selfShortLength == 0)
 		return 200;
 
-	if (meShortLength == 0)
+	if (rivalShortLength == 0)
 		return 0;
 
-	int score = 100 - cmpShortLength + meShortLength;
-
+	int score = 100 - selfShortLength + rivalShortLength;
 	//    int score = 100 - cmpShortLength;
 	return score;
 }

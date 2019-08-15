@@ -33,13 +33,13 @@
     <ClInclude Include="Global.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Quyu.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="AI.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="GameService.h">
+    <ClInclude Include="GameData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GameDisplay.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,13 +53,13 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Quyu.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="AI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="GameService.cpp">
+    <ClCompile Include="GameData.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GameDisplay.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

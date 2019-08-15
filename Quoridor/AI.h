@@ -1,36 +1,35 @@
 #pragma once
-
 #include "Global.h"
-#include "GameService.h"
+#include "GameData.h"
 
 struct MoveNode {
 	MoveNode() {}
-	MoveNode(int s, int type, Vec2 p) {
+	MoveNode(int s, int type, CPoint p) {
 		score = s;
-		moveType = type;
-		pos = p;
+		order = Order(type, p);
 	}
 	bool operator <(const MoveNode& t) const { return this->score < t.score; }
 	int score;
-	int moveType;
-	Vec2 pos;
+	Order order;
 };
 
 class AI
 {
 public:
 	AI() = default;
-	AI(int depth, long time, class GameService* game);
-	std::pair<Vec2, int> getNextMove(void);
-	long alphaBeta(int depth, int playerId, long alpha, long beta);
-	int evaluate(void);
-	long long getSystemTime(void);
-	
+	AI(int depth, int id, long time, class GameData* gameData);
+	Order getNextMove(void);
 	
 private:
 	bool isRuning;
-	int _depth;
-	int _time;
-	class GameService* _game;
+	int mSelfID;
+	int mRivalID;
+	int mThinkDepth;
+	long mTimeLimited;
+	class GameData* mGaveData;
+
+	long alphaBeta(int depth, int playerId, long alpha, long beta);
+	int evaluate(void);
+	long long getSystemTime(void);
 };
 
