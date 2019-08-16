@@ -4,25 +4,37 @@
 #include <sys/timeb.h>
 #include <algorithm>
 
-AI::AI(int depth, int id, long time, GameData* gameData)
+struct MoveNode {
+	MoveNode() {}
+	MoveNode(int s, int type, CPoint p) {
+		score = s;
+		order = Order(type, p);
+	}
+	bool operator <(const MoveNode& t) const { return this->score < t.score; }
+	int score;
+	Order order;
+};
+
+AI::AI(int depth, int id, long time, const GameData* gameData)
 {
 	mThinkDepth = depth;
 	mSelfID = id;
 	mRivalID = 1 - id;
 	mTimeLimited = time;
-	mGaveData = gameData;
-	isRuning = false;
+	mGameDataBackup = gameData;
+	isAIRunning = false;
 }
 
 Order AI::getNextMove(void)
 {
-	isRuning = true;
+	isAIRunning = true;
+	mGameData = new GameData(*mGameDataBackup);
 	long long startTime = getSystemTime();
 
 	std::vector<MoveNode> moveVt;
 
-	std::vector<CPoint> moves = mGaveData->getMoveVaild(mSelfID);
-	std::vector<std::pair<CPoint, int>> wallMoves = mGaveData->getWallVaild(mSelfID);
+	std::vector<CPoint> moves = mGameData->getMoveVaild(mSelfID);
+	std::vector<std::pair<CPoint, int>> wallMoves = mGameData->getWallVaild(mSelfID);
 
 	for (auto move : moves)
 	{
@@ -60,16 +72,16 @@ Order AI::getNextMove(void)
 
 			if (moveVt[i].order.type == 2)//表示走子
 			{
-				auto tempPos = mGaveData->getCurrentPosition(mSelfID);
-				mGaveData->setMove(mSelfID, x, y);
+				auto tempPos = mGameData->getCurrentPosition(mSelfID);
+				mGameData->setMove(mSelfID, x, y);
 				val = -alphaBeta(i_depth, mRivalID, -beta, -alpha);
-				mGaveData->setMove(mSelfID, tempPos.x, tempPos.y);
+				mGameData->setMove(mSelfID, tempPos.x, tempPos.y);
 			}
 			else
 			{
-				mGaveData->setWall(mSelfID, moveVt[i].order.type, x, y);
+				mGameData->setWall(mSelfID, moveVt[i].order.type, x, y);
 				val = -alphaBeta(i_depth, mRivalID, -beta, -alpha);
-				mGaveData->resetWall(moveVt[i].order.type, x, y);
+				mGameData->resetWall(moveVt[i].order.type, x, y);
 			}
 
 			if (val > alpha)
@@ -84,8 +96,8 @@ Order AI::getNextMove(void)
 
 		std::sort(moveVt.begin(), moveVt.end());
 	}
-
-	isRuning = false;
+	delete mGameData;
+	isAIRunning = false;
 
 	return Order(ans.order.type, ans.order.point);
 }
@@ -101,29 +113,29 @@ long AI::alphaBeta(int depth, int player, long alpha, long beta)
 		return score;
 	}
 
-	std::vector<CPoint> moves = mGaveData->getMoveVaild(player);
+	std::vector<CPoint> moves = mGameData->getMoveVaild(player);
 
 	long val;
 
 	for (auto move : moves)
 	{
-		CPoint tempPos = mGaveData->getCurrentPosition(player);
-		mGaveData->setMove(player, move.x, move.y);
+		CPoint tempPos = mGameData->getCurrentPosition(player);
+		mGameData->setMove(player, move.x, move.y);
 		val = -alphaBeta(depth - 1, 1 - player, -beta, -alpha);
-		mGaveData->setMove(player, tempPos.x, tempPos.y);
+		mGameData->setMove(player, tempPos.x, tempPos.y);
 		if (val >= beta)
 			return beta;
 		if (val > alpha)
 			alpha = val;
 	}
 
-	std::vector<std::pair<CPoint, int>> wallMoves = mGaveData->getWallVaild(player);
+	std::vector<std::pair<CPoint, int>> wallMoves = mGameData->getWallVaild(player);
 
 	for (auto wallMove : wallMoves)
 	{
-		mGaveData->setWall(player, wallMove.second, (int)wallMove.first.x, (int)wallMove.first.y);
+		mGameData->setWall(player, wallMove.second, (int)wallMove.first.x, (int)wallMove.first.y);
 		val = -alphaBeta(depth - 1, 1 - player, -beta, -alpha);
-		mGaveData->resetWall(wallMove.second, (int)wallMove.first.x, (int)wallMove.first.y);
+		mGameData->resetWall(wallMove.second, (int)wallMove.first.x, (int)wallMove.first.y);
 
 		if (val >= beta)
 			return beta;
@@ -134,12 +146,12 @@ long AI::alphaBeta(int depth, int player, long alpha, long beta)
 	return alpha;
 }
 
-int AI::evaluate(void)
+int AI::evaluate(void) const
 {
-	int selfShortLength = mGaveData->getShortPath(mSelfID, mGaveData->getCurrentPosition(mSelfID));
-	int rivalShortLength = mGaveData->getShortPath(mRivalID, mGaveData->getCurrentPosition(mRivalID));
-	int selfWallNum = mGaveData->getCurrentWallNum(mSelfID);
-	int rivalWallNum = mGaveData->getCurrentWallNum(mRivalID);
+	int selfShortLength = mGameData->getShortPath(mSelfID);
+	int rivalShortLength = mGameData->getShortPath(mRivalID);
+	int selfWallNum = mGameData->getCurrentWallNum(mSelfID);
+	int rivalWallNum = mGameData->getCurrentWallNum(mRivalID);
 
 	if (selfShortLength == 0)
 		return 200;
@@ -148,11 +160,12 @@ int AI::evaluate(void)
 		return 0;
 
 	int score = 100 - selfShortLength + rivalShortLength;
-	//    int score = 100 - cmpShortLength;
+	//int score = 100 - selfShortLength + rivalShortLength - selfWallNum + rivalWallNum;
+
 	return score;
 }
 
-long long AI::getSystemTime(void)
+long long AI::getSystemTime(void) const
 {
 	struct timeb t;
 	ftime(&t);

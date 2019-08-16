@@ -8,18 +8,16 @@ using namespace std;
 #define SIZE_WALL		8
 #define STARTAXIS_X		280
 #define STARTAXIS_Y		100
-#define NUM_SQUARE		7
-#define WALLNUM			8
-
-
+#define NUM_SQUARE		7       // 棋盘的大小
+#define WALLNUM			8       // 每个玩家拥有的墙数
 
 #define RGBA(r,g,b,a)	((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16))|(((DWORD)(BYTE)(a))<<24)))
 #define COLOR_BLACK		RGB(0, 0, 0)
 #define COLOR_RED		RGB(255, 0, 0)
 #define COLOR_EMPTY		RGB(240, 240, 240)
 
-#define CONDITION_PLAYER1_WIN(p)	( p.y == NUM_SQUARE - 1 )
-#define CONDITION_PLAYER1_START(p)	{ p.x = (NUM_SQUARE - 1) / 2; p.y = 0; }
+#define CONDITION_PLAYER1_WIN(p)	( p.y == NUM_SQUARE - 1 )   // 玩家1的胜利条件
+#define CONDITION_PLAYER1_START(p)	{ p.x = (NUM_SQUARE - 1) / 2; p.y = 0; }    //玩家1的开始位置
 #define CONDITION_PLAYER2_WIN(p)	( p.y == 0 )
 #define CONDITION_PLAYER2_START(p)	{ p.x = (NUM_SQUARE - 1) / 2; p.y = NUM_SQUARE - 1; }
 #define CONDITION_PLAYER3_WIN(p)	( p.x == NUM_SQUARE - 1 )
@@ -27,11 +25,11 @@ using namespace std;
 #define CONDITION_PLAYER4_WIN(p)	( p.x == 0 )
 #define CONDITION_PLAYER4_START(p)	{ p.x = NUM_SQUARE - 1; p.y = (NUM_SQUARE - 1) / 2; }
 
-enum OrderType {
-	WALLH,
-	WALLV,
-	MOVE,
-	NONE,
+enum OrderType { // 指令类型
+	WALLH, // 横墙
+	WALLV, // 竖墙
+	MOVE,  // 移动
+	NONE,  // 无
 };
 
 struct Order {
@@ -43,7 +41,7 @@ struct Order {
 };
 
 #define MAX_PLAYER_NUM  4
-enum Players
+enum PLAYERID
 {
 	EMPTY = -1,
 	PLAYER1 = 0,

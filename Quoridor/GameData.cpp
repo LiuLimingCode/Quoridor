@@ -174,11 +174,11 @@ void GameData::resetGame(void)
 	}
 
 	for (int player = 0; player < PLAYER_NUM; ++player) {
-		mPlayerShortLength[player] = getShortPath(player, mPlayerPosition[player]);
+		mPlayerShortLength[player] = getShortPath(player);
 	}
 }
 
-vector<pair<CPoint, int>> GameData::getWallVaild(int player)
+vector<pair<CPoint, int>> GameData::getWallVaild(int player) const
 {
 	vector<pair<CPoint, int>> result;
 
@@ -205,7 +205,7 @@ void GameData::gotoMove(int player, int x, int y)
 	mPlayerPosition[player] = CPoint(x, y);
 	mBoard[(int)mPlayerPosition[player].x][(int)mPlayerPosition[player].y] = true;
 	for (int index = 0; index < PLAYER_NUM; ++index) {
-		mPlayerShortLength[index] = getShortPath(index, mPlayerPosition[index]);
+		mPlayerShortLength[index] = getShortPath(index);
 	}
 	mOrderBuffer[player].push_back(Order(MOVE, CPoint(x, y)));
 }
@@ -217,11 +217,16 @@ void GameData::setMove(int player, int x, int y)
 	mBoard[(int)mPlayerPosition[player].x][(int)mPlayerPosition[player].y] = true;
 }
 
+void GameData::resetMove(int player)
+{
+	mBoard[(int)mPlayerPosition[player].x][(int)mPlayerPosition[player].y] = false;
+}
+
 void GameData::gotoWall(int player, int type, int x, int y) {
 	mWall[type][x][y] = player + 1;
 	mWallNum[player]--;
 	for (int index = 0; index < PLAYER_NUM; ++index) {
-		mPlayerShortLength[index] = getShortPath(index, mPlayerPosition[index]);
+		mPlayerShortLength[index] = getShortPath(index);
 	}
 	mOrderBuffer[player].push_back(Order(type, CPoint(x, y)));
 }
@@ -234,8 +239,10 @@ void GameData::resetWall(int type, int x, int y) {
 	mWall[type][x][y] = 0;
 }
 
-int GameData::getShortPath(int player, CPoint start)
+int GameData::getShortPath(int player) const
 {
+	GameData tempData = *this;// 用一个新拷贝数据来进行数据的修改操作,保证数据的安全
+	CPoint start = mPlayerPosition[player];
 	bool flag[NUM_SQUARE][NUM_SQUARE];
 	queue<pair<CPoint, int>> queue;
 	int return_flag = -1;
@@ -244,10 +251,9 @@ int GameData::getShortPath(int player, CPoint start)
 	flag[(int)start.x][(int)start.y] = true;
 	queue.push(make_pair(start, 0));
 
-	CPoint tempPos[PLAYER_NUM];
-	for (int index = 0; index < PLAYER_NUM; ++index) {
-		tempPos[index] = mPlayerPosition[index];// tempPos暂时保存棋子数据
-		mBoard[(int)tempPos[index].x][(int)tempPos[index].y] = false;// 清空棋子
+	for (int index = 0; index < PLAYER_NUM; ++index) // 先清除数据中其他玩家的位置,不允许在最短路程的搜索中出现连跳
+	{
+		tempData.resetMove(index);
 	}
 
 	while (!queue.empty())
@@ -255,12 +261,10 @@ int GameData::getShortPath(int player, CPoint start)
 		auto now = queue.front();
 		queue.pop();
 
-		mPlayerPosition[player] = now.first;
-		mBoard[(int)now.first.x][(int)now.first.y] = true;
-		auto moves = getMoveVaild(player);
-		mBoard[(int)now.first.x][(int)now.first.y] = false;
+		tempData.setMove(player, now.first.x, now.first.y);
+		auto moves = tempData.getMoveVaild(player);
 
-		if ((this->*isPlayerWin[player])() == true)
+		if ((tempData.*isPlayerWin[player])() == true)
 		{
 			return_flag = now.second;
 			break;
@@ -275,12 +279,6 @@ int GameData::getShortPath(int player, CPoint start)
 			}
 		}
 	}
-
-	for (int index = 0; index < PLAYER_NUM; ++index) {
-		mPlayerPosition[index] = tempPos[index];
-		mBoard[(int)tempPos[index].x][(int)tempPos[index].y] = true;
-	}
-
 	return return_flag;
 }
 
@@ -299,7 +297,7 @@ bool GameData::isPoint(int x, int y) const
 	return false;
 }
 
-int GameData::isEnd(void)
+int GameData::isEnd(void) const
 {
 	int temp = EMPTY;
 	for (int player = 0; player < PLAYER_NUM; ++player) {
@@ -342,7 +340,7 @@ vector<pair<CPoint, int>> GameData::getCurrentWall(int player) const
 	return result;
 }
 
-bool GameData::checkOrder(int player, Order order)
+bool GameData::checkOrder(int player, Order order) const
 {
 	const int type = order.type;
 	const int x = order.point.x;
@@ -362,13 +360,14 @@ bool GameData::checkOrder(int player, Order order)
 	return false;
 }
 
-bool GameData::checkWall(int player, int type, int x, int y)
+bool GameData::checkWall(int player, int type, int x, int y) const
 {
 	if (!isWall(x, y))
 		return false;
 
 	if (mWallNum[player] == 0)
 		return false;
+	GameData tempData = *this;
 
 	//横墙
 	if (type == 0)
@@ -378,14 +377,14 @@ bool GameData::checkWall(int player, int type, int x, int y)
 			&& (!isWall(x + 1, y) || mWall[0][x + 1][y] == 0)
 			&& mWall[1][x][y] == 0)
 		{
-			setWall(0, type, x, y);
+			tempData.setWall(0, type, x, y);
 			bool isReachable = true;
 			for (int index = 0; index < PLAYER_NUM; ++index) {
-				if (getShortPath(index, mPlayerPosition[index]) == -1) {
+				if (tempData.getShortPath(index) == -1) {
 					isReachable = false; break;
 				}
 			}
-			resetWall(type, x, y);
+			tempData.resetWall(type, x, y);
 			if (isReachable == true)
 				return true;
 		}
@@ -398,14 +397,14 @@ bool GameData::checkWall(int player, int type, int x, int y)
 			&& (!isWall(x, y + 1) || mWall[1][x][y + 1] == 0)
 			&& mWall[0][x][y] == 0)
 		{
-			setWall(0, type, x, y);
+			tempData.setWall(0, type, x, y);
 			bool isReachable = true;
 			for (int index = 0; index < PLAYER_NUM; ++index) {
-				if (getShortPath(index, mPlayerPosition[index]) == -1) {
+				if (tempData.getShortPath(index) == -1) {
 					isReachable = false; break;
 				}
 			}
-			resetWall(type, x, y);
+			tempData.resetWall(type, x, y);
 			if (isReachable == true)
 				return true;
 		}
