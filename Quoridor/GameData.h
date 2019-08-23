@@ -181,7 +181,7 @@ public:
      *          玩家ID
      * @return  玩家的坐标
      */
-	CPoint getCurrentPosition(int player) const;
+	Point getCurrentPosition(int player) const;
 
     /*
      * 得到玩家目前在棋盘上已经放的墙
@@ -189,7 +189,7 @@ public:
      *          玩家ID
      * @return  该玩家在棋盘上放的墙,返回类型为<墙的坐标,墙的类型>
      */
-	vector<pair<CPoint, int>> getCurrentWall(int player) const;
+	std::vector<std::pair<Point, int>> getCurrentWall(int player) const;
 
     /*
      * 得到玩家在目前能够走的位置
@@ -197,7 +197,7 @@ public:
      *          玩家ID
      * @return  玩家在目前能够走的坐标
      */
-	vector<CPoint> getMoveVaild(int player) const;
+	std::vector<Point> getMoveVaild(int player) const;
 
     /*
      * 得到玩家在目前能够放墙的位置
@@ -205,7 +205,7 @@ public:
      *          玩家ID
      * @return  玩家在能够放墙的位置,返回类型为<墙的坐标,墙的类型>
      */
-	vector<pair<CPoint, int>> getWallVaild(int player) const;
+	std::vector<std::pair<Point, int>> getWallVaild(int player) const;
 
 private:
 
@@ -225,11 +225,11 @@ private:
 	int mWall[2][NUM_SQUARE][NUM_SQUARE] = { 0 };
 	bool mBoard[NUM_SQUARE][NUM_SQUARE] = { 0 };
 
-	vector<Order> mOrderBuffer[PLAYER_NUM];
+	std::vector<Order> mOrderBuffer[PLAYER_NUM];
 
 	int mPlayerShortLength[PLAYER_NUM];
 	//棋子位置
-	CPoint mPlayerPosition[PLAYER_NUM];
+	Point mPlayerPosition[PLAYER_NUM];
 
 	bool(GameData::* isPlayerWin[MAX_PLAYER_NUM])(void) const = { &GameData::isPlayer1Win, &GameData::isPlayer2Win, &GameData::isPlayer3Win, &GameData::isPlayer4Win };
 	bool isPlayer1Win(void) const { return CONDITION_PLAYER1_WIN(mPlayerPosition[0]) ? true : false; }

@@ -3,9 +3,9 @@
 #include "Global.h"
 #include <queue>
 
-vector<CPoint> GameData::getMoveVaild(int player) const
+std::vector<Point> GameData::getMoveVaild(int player) const
 {
-	vector<CPoint> moves;
+	std::vector<Point> moves;
 	int x = mPlayerPosition[player].x;
 	int y = mPlayerPosition[player].y;
 
@@ -14,14 +14,14 @@ vector<CPoint> GameData::getMoveVaild(int player) const
 		&& (!isWall(x - 1, y) || mWall[0][x - 1][y] == 0))
 	{
 		if (isPoint(x, y + 1) && !mBoard[x][y + 1])
-			moves.push_back(CPoint(x, y + 1));
+			moves.push_back(Point(x, y + 1));
 		else
 		{
 			//0, 2
 			if (isPoint(x, y + 2) && !mBoard[x][y + 2]
 				&& (!isWall(x, y + 1) || mWall[0][x][y + 1] == 0)
 				&& (!isWall(x - 1, y + 1) || mWall[0][x - 1][y + 1] == 0))
-				moves.push_back(CPoint(x, y + 2));
+				moves.push_back(Point(x, y + 2));
 		}
 	}
 	//-1, 0
@@ -29,14 +29,14 @@ vector<CPoint> GameData::getMoveVaild(int player) const
 		&& (!isWall(x - 1, y - 1) || mWall[1][x - 1][y - 1] == 0))
 	{
 		if (isPoint(x - 1, y) && !mBoard[x - 1][y])
-			moves.push_back(CPoint(x - 1, y));
+			moves.push_back(Point(x - 1, y));
 		else
 		{
 			//-2, 0
 			if (isPoint(x - 2, y) && !mBoard[x - 2][y]
 				&& (!isWall(x - 2, y) || mWall[1][x - 2][y] == 0)
 				&& (!isWall(x - 2, y - 1) || mWall[1][x - 2][y - 1] == 0))
-				moves.push_back(CPoint(x - 2, y));
+				moves.push_back(Point(x - 2, y));
 		}
 	}
 	//1, 0
@@ -44,14 +44,14 @@ vector<CPoint> GameData::getMoveVaild(int player) const
 		&& (!isWall(x, y - 1) || mWall[1][x][y - 1] == 0))
 	{
 		if (isPoint(x + 1, y) && !mBoard[x + 1][y])
-			moves.push_back(CPoint(x + 1, y));
+			moves.push_back(Point(x + 1, y));
 		else
 		{
 			//2, 0
 			if (isPoint(x + 2, y) && !mBoard[x + 2][y]
 				&& (!isWall(x + 1, y) || mWall[1][x + 1][y] == 0)
 				&& (!isWall(x + 1, y - 1) || mWall[1][x + 1][y - 1] == 0))
-				moves.push_back(CPoint(x + 2, y));
+				moves.push_back(Point(x + 2, y));
 		}
 	}
 	//0, -1
@@ -59,14 +59,14 @@ vector<CPoint> GameData::getMoveVaild(int player) const
 		&& (!isWall(x - 1, y - 1) || mWall[0][x - 1][y - 1] == 0))
 	{
 		if (isPoint(x, y - 1) && !mBoard[x][y - 1])
-			moves.push_back(CPoint(x, y - 1));
+			moves.push_back(Point(x, y - 1));
 		else
 		{
 			//0, -2
 			if (isPoint(x, y - 2) && !mBoard[x][y - 2]
 				&& (!isWall(x, y - 2) || mWall[0][x][y - 2] == 0)
 				&& (!isWall(x - 1, y - 2) || mWall[0][x - 1][y - 2] == 0))
-				moves.push_back(CPoint(x, y - 2));
+				moves.push_back(Point(x, y - 2));
 		}
 	}
 
@@ -83,12 +83,12 @@ vector<CPoint> GameData::getMoveVaild(int player) const
 		if (isPoint(x + 1, y + 1) && !mBoard[x + 1][y + 1]
 			&& (!isWall(x, y + 1) || mWall[1][x][y + 1] == 0)
 			&& (!isWall(x, y) || mWall[1][x][y] == 0))
-			moves.push_back(CPoint(x + 1, y + 1));
+			moves.push_back(Point(x + 1, y + 1));
 		//-1, 1
 		if (isPoint(x - 1, y + 1) && !mBoard[x - 1][y + 1]
 			&& (!isWall(x - 1, y + 1) || mWall[1][x - 1][y + 1] == 0)
 			&& (!isWall(x - 1, y) || mWall[1][x - 1][y] == 0))
-			moves.push_back(CPoint(x - 1, y + 1));
+			moves.push_back(Point(x - 1, y + 1));
 	}
 	if (isPoint(x + 1, y) && mBoard[x + 1][y]
 		&& (!isWall(x, y) || mWall[1][x][y] == 0)
@@ -101,12 +101,12 @@ vector<CPoint> GameData::getMoveVaild(int player) const
 		if (isPoint(x, y - 1) && !mBoard[x][y - 1]
 			&& (!isWall(x, y - 1) || mWall[0][x][y - 1] == 0)
 			&& (!isWall(x - 1, y - 1) || mWall[0][x - 1][y - 1] == 0))
-			moves.push_back(CPoint(x + 1, y - 1));
+			moves.push_back(Point(x + 1, y - 1));
 		//1, 1
 		if (isPoint(x + 1, y + 1) && !mBoard[x + 1][y + 1]
 			&& (!isWall(x + 1, y) || mWall[1][x + 1][y] == 0)
 			&& (!isWall(x, y) || mWall[1][x][y] == 0))
-			moves.push_back(CPoint(x + 1, y + 1));
+			moves.push_back(Point(x + 1, y + 1));
 
 	}
 	if (isPoint(x - 1, y) && mBoard[x - 1][y]
@@ -120,12 +120,12 @@ vector<CPoint> GameData::getMoveVaild(int player) const
 		if (isPoint(x - 1, y - 1) && !mBoard[x - 1][y - 1]
 			&& (!isWall(x - 1, y - 1) || mWall[0][x - 1][y - 1] == 0)
 			&& (!isWall(x - 2, y - 1) || mWall[0][x - 2][y - 1] == 0))
-			moves.push_back(CPoint(x - 1, y - 1));
+			moves.push_back(Point(x - 1, y - 1));
 		//-1, 1
 		if (isPoint(x - 1, y + 1) && !mBoard[x - 1][y + 1]
 			&& (!isWall(x - 1, y) || mWall[0][x - 1][y] == 0)
 			&& (!isWall(x - 2, y) || mWall[0][x - 2][y] == 0))
-			moves.push_back(CPoint(x - 1, y + 1));
+			moves.push_back(Point(x - 1, y + 1));
 	}
 
 	//0, -1
@@ -140,12 +140,12 @@ vector<CPoint> GameData::getMoveVaild(int player) const
 		if (isPoint(x + 1, y - 1) && !mBoard[x + 1][y - 1]
 			&& (!isWall(x, y - 1) || mWall[1][x][y - 1] == 0)
 			&& (!isWall(x, y - 2) || mWall[1][x][y - 2] == 0))
-			moves.push_back(CPoint(x + 1, y - 1));
+			moves.push_back(Point(x + 1, y - 1));
 		//-1, -1
 		if (isPoint(x - 1, y - 1) && !mBoard[x - 1][y - 1]
 			&& (!isWall(x - 1, y - 1) || mWall[1][x - 1][y - 1] == 0)
 			&& (!isWall(x - 1, y - 2) || mWall[1][x - 1][y - 2] == 0))
-			moves.push_back(CPoint(x - 1, y - 1));
+			moves.push_back(Point(x - 1, y - 1));
 	}
 
 	return moves;
@@ -178,9 +178,9 @@ void GameData::resetGame(void)
 	}
 }
 
-vector<pair<CPoint, int>> GameData::getWallVaild(int player) const
+std::vector<std::pair<Point, int>> GameData::getWallVaild(int player) const
 {
-	vector<pair<CPoint, int>> result;
+	std::vector<std::pair<Point, int>> result;
 
 	if (mWallNum[player] <= 0)
 		return result;
@@ -192,7 +192,7 @@ vector<pair<CPoint, int>> GameData::getWallVaild(int player) const
 			for (int j = 0; j < NUM_SQUARE - 1; j++)
 			{
 				if (checkWall(player, type, i, j))
-					result.push_back(make_pair(CPoint(i, j), type));
+					result.push_back(std::make_pair(Point(i, j), type));
 			}
 		}
 	}
@@ -202,18 +202,18 @@ vector<pair<CPoint, int>> GameData::getWallVaild(int player) const
 void GameData::gotoMove(int player, int x, int y)
 {
 	mBoard[(int)mPlayerPosition[player].x][(int)mPlayerPosition[player].y] = false;
-	mPlayerPosition[player] = CPoint(x, y);
+	mPlayerPosition[player] = Point(x, y);
 	mBoard[(int)mPlayerPosition[player].x][(int)mPlayerPosition[player].y] = true;
 	for (int index = 0; index < PLAYER_NUM; ++index) {
 		mPlayerShortLength[index] = getShortPath(index);
 	}
-	mOrderBuffer[player].push_back(Order(MOVE, CPoint(x, y)));
+	mOrderBuffer[player].push_back(Order(MOVE, Point(x, y)));
 }
 
 void GameData::setMove(int player, int x, int y)
 {
 	mBoard[(int)mPlayerPosition[player].x][(int)mPlayerPosition[player].y] = false;
-	mPlayerPosition[player] = CPoint(x, y);
+	mPlayerPosition[player] = Point(x, y);
 	mBoard[(int)mPlayerPosition[player].x][(int)mPlayerPosition[player].y] = true;
 }
 
@@ -228,7 +228,7 @@ void GameData::gotoWall(int player, int type, int x, int y) {
 	for (int index = 0; index < PLAYER_NUM; ++index) {
 		mPlayerShortLength[index] = getShortPath(index);
 	}
-	mOrderBuffer[player].push_back(Order(type, CPoint(x, y)));
+	mOrderBuffer[player].push_back(Order(type, Point(x, y)));
 }
 
 void GameData::setWall(int player, int type, int x, int y) {
@@ -242,14 +242,21 @@ void GameData::resetWall(int type, int x, int y) {
 int GameData::getShortPath(int player) const
 {
 	GameData tempData = *this;// 用一个新拷贝数据来进行数据的修改操作,保证数据的安全
-	CPoint start = mPlayerPosition[player];
+	Point start = mPlayerPosition[player];
 	bool flag[NUM_SQUARE][NUM_SQUARE];
-	queue<pair<CPoint, int>> queue;
+    std::queue<std::pair<Point, int>> queue;
 	int return_flag = -1;
 
-	memset(flag, 0, sizeof(flag));
+    for (int i = 0; i < NUM_SQUARE; ++i)
+    {
+        for (int j = 0; j < NUM_SQUARE; ++j)
+        {
+            flag[i][j] = false;
+        }
+    }
+
 	flag[(int)start.x][(int)start.y] = true;
-	queue.push(make_pair(start, 0));
+	queue.push(std::make_pair(start, 0));
 
 	for (int index = 0; index < PLAYER_NUM; ++index) // 先清除数据中其他玩家的位置,不允许在最短路程的搜索中出现连跳
 	{
@@ -275,7 +282,7 @@ int GameData::getShortPath(int player) const
 			if (!flag[(int)move.x][(int)move.y])
 			{
 				flag[(int)move.x][(int)move.y] = true;
-				queue.push(make_pair(move, now.second + 1));
+				queue.push(std::make_pair(move, now.second + 1));
 			}
 		}
 	}
@@ -318,14 +325,14 @@ int GameData::getCurrentWallNum(int player) const
 	return mWallNum[player];
 }
 
-CPoint GameData::getCurrentPosition(int player) const
+Point GameData::getCurrentPosition(int player) const
 {
 	return mPlayerPosition[player];
 }
 
-vector<pair<CPoint, int>> GameData::getCurrentWall(int player) const
+std::vector<std::pair<Point, int>> GameData::getCurrentWall(int player) const
 {
-	vector<pair<CPoint, int>> result;
+	std::vector<std::pair<Point, int>> result;
 	for (int type = 0; type <= 1; type++)
 	{
 		for (int i = 0; i < NUM_SQUARE - 1; i++)
@@ -333,7 +340,7 @@ vector<pair<CPoint, int>> GameData::getCurrentWall(int player) const
 			for (int j = 0; j < NUM_SQUARE - 1; j++)
 			{
 				if (mWall[type][i][j] == player + 1)
-					result.push_back(make_pair(CPoint(i, j), type));
+					result.push_back(std::make_pair(Point(i, j), type));
 			}
 		}
 	}

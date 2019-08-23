@@ -39,7 +39,7 @@ GameDisplay::GameDisplay(void)
 	}
 }
 
-CRect GameDisplay::getPlayerRegion(CPoint point) const
+CRect GameDisplay::getPlayerRegion(Point point) const
 {
 	auto region = mRegionBoard[point.y * NUM_SQUARE + point.x];
 
@@ -51,12 +51,12 @@ CRect GameDisplay::getPlayerRegion(CPoint point) const
 	return rect;
 }
 
-vector<CRect> GameDisplay::getWallRegion(vector<pair<CPoint, int>> wall) const
+std::vector<CRect> GameDisplay::getWallRegion(std::vector<std::pair<Point, int>> wall) const
 {
-	vector<CRect> rects;
+    std::vector<CRect> rects;
 	for (auto index = 0; index != wall.size(); ++index)
 	{
-		CPoint point = wall[index].first;
+		Point point = wall[index].first;
 		int type = wall[index].second;
 		if (type == 0)
 		{
@@ -72,7 +72,7 @@ vector<CRect> GameDisplay::getWallRegion(vector<pair<CPoint, int>> wall) const
 	return rects;
 }
 
-bool GameDisplay::isBoardOn(CPoint point, Region region) const
+bool GameDisplay::isBoardOn(Point point, Region region) const
 {
 	bool flag = false;
 	if (point.x < region.x + 15 && point.x > region.x - 15 && point.y < region.y + 15 && point.y > region.y - 15)
@@ -80,7 +80,7 @@ bool GameDisplay::isBoardOn(CPoint point, Region region) const
 	return flag;
 }
 
-bool GameDisplay::isWallOn(int type, CPoint point, Region region) const
+bool GameDisplay::isWallOn(int type, Point point, Region region) const
 {
 	bool flag = false;
 	if (type == 0 && point.x < region.x + 15 && point.x > region.x - 15 && point.y < region.y + 4 && point.y > region.y - 4)
@@ -90,7 +90,7 @@ bool GameDisplay::isWallOn(int type, CPoint point, Region region) const
 	return flag;
 }
 
-Order GameDisplay::getPositionToOrder(CPoint point) const
+Order GameDisplay::getPositionToOrder(Point point) const
 {
 	Order order;
 	for (auto index = 0; index != mRegionBoard.size(); ++index)

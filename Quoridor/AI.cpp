@@ -6,7 +6,7 @@
 
 struct MoveNode {
 	MoveNode() {}
-	MoveNode(int s, int type, CPoint p) {
+	MoveNode(int s, int type, Point p) {
 		score = s;
 		order = Order(type, p);
 	}
@@ -33,8 +33,8 @@ Order AI::getNextMove(void)
 
 	std::vector<MoveNode> moveVt;
 
-	std::vector<CPoint> moves = mGameData->getMoveVaild(mSelfID);
-	std::vector<std::pair<CPoint, int>> wallMoves = mGameData->getWallVaild(mSelfID);
+	std::vector<Point> moves = mGameData->getMoveVaild(mSelfID);
+	std::vector<std::pair<Point, int>> wallMoves = mGameData->getWallVaild(mSelfID);
 
 	for (auto move : moves)
 	{
@@ -113,13 +113,13 @@ long AI::alphaBeta(int depth, int player, long alpha, long beta)
 		return score;
 	}
 
-	std::vector<CPoint> moves = mGameData->getMoveVaild(player);
+	std::vector<Point> moves = mGameData->getMoveVaild(player);
 
 	long val;
 
 	for (auto move : moves)
 	{
-		CPoint tempPos = mGameData->getCurrentPosition(player);
+		Point tempPos = mGameData->getCurrentPosition(player);
 		mGameData->setMove(player, move.x, move.y);
 		val = -alphaBeta(depth - 1, 1 - player, -beta, -alpha);
 		mGameData->setMove(player, tempPos.x, tempPos.y);
@@ -129,7 +129,7 @@ long AI::alphaBeta(int depth, int player, long alpha, long beta)
 			alpha = val;
 	}
 
-	std::vector<std::pair<CPoint, int>> wallMoves = mGameData->getWallVaild(player);
+	std::vector<std::pair<Point, int>> wallMoves = mGameData->getWallVaild(player);
 
 	for (auto wallMove : wallMoves)
 	{

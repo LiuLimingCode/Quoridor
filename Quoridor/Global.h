@@ -32,12 +32,20 @@ enum OrderType { // 指令类型
 	NONE,  // 无
 };
 
+struct Point {
+    int x;
+    int y;
+    Point(int _x = 0, int _y = 0) {
+        x = _x; y = _y;
+    }
+};
+
 struct Order {
 	OrderType type;
-	CPoint point;
-	Order() { type = NONE; point = CPoint(0, 0); };
-	Order(int t, CPoint p) : type((OrderType)t), point(p) {}
-	Order(int t, int x, int y) : type((OrderType)t), point(CPoint(x, y)) {}
+	Point point;
+	Order() { type = NONE; point = Point(0, 0); };
+	Order(int t, Point p) : type((OrderType)t), point(p) {}
+	Order(int t, int x, int y) : type((OrderType)t), point(Point(x, y)) {}
 };
 
 #define MAX_PLAYER_NUM  4
