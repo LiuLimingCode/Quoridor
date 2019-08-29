@@ -433,5 +433,37 @@ bool GameData::checkMove(int player, int x, int y) const
 
 void GameData::undoGame(void)
 {
+    for (int player = 0; player < PLAYER_NUM; ++player)
+    {
+        if (mOrderBuffer[player].size() <= 1)
+            return;
+    }
 
+    for (int player = 0; player < PLAYER_NUM; ++player)
+    {
+        Order order = mOrderBuffer[player].back();
+        mOrderBuffer[player].pop_back();
+        if (order.type == MOVE)
+        {
+            Point pOld;
+            for (int index = mOrderBuffer[player].size() - 1; index >= 0; --index)
+            {
+                if (mOrderBuffer[player].at(index).type == MOVE)
+                {
+                    pOld = mOrderBuffer[player].at(index).point;
+                    break;
+                }
+            }
+            setMove(player, pOld.x, pOld.y);
+        }
+        else
+        {
+            mWall[order.type][order.point.x][order.point.y] = 0;
+            mWallNum[player]++;
+        }
+
+        for (int player = 0; player < PLAYER_NUM; ++player) {
+            mPlayerShortLength[player] = getShortPath(player);
+        }
+    }
 }

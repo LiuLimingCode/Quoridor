@@ -11,7 +11,7 @@ using namespace std;
 #define NUM_SQUARE		7       // 棋盘的大小
 #define WALLNUM			8       // 每个玩家拥有的墙数
 
-#define RGBA(r,g,b,a)	((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16))|(((DWORD)(BYTE)(a))<<24)))
+#define RGBA(r,g,b,a)	((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16))|(((DWORD)(BYTE)(a))<<24))
 #define COLOR_BLACK		RGB(0, 0, 0)
 #define COLOR_RED		RGB(255, 0, 0)
 #define COLOR_EMPTY		RGB(240, 240, 240)

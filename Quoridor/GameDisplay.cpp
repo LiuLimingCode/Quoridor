@@ -51,23 +51,30 @@ CRect GameDisplay::getPlayerRegion(Point point) const
 	return rect;
 }
 
+CRect GameDisplay::getWallRegion(std::pair<Point, int> wall) const
+{
+    CRect rect;
+    Point point = wall.first;
+    int type = wall.second;
+    if (type == 0)
+    {
+        auto region = mRegionWall[type][point.y * NUM_SQUARE + point.x];
+        rect = CRect(region.x - SIZE_SQUARE / 2, region.y - 4, region.x + SIZE_SQUARE / 2 + SIZE_SQUARE, region.y + 4);
+    }
+    else if (type == 1)
+    {
+        auto region = mRegionWall[type][point.y * NUM_SQUARE + point.x];
+        rect = CRect(region.x - 4, region.y - SIZE_SQUARE / 2 - SIZE_SQUARE, region.x + 4, region.y + SIZE_SQUARE / 2);
+    }
+    return rect;
+}
+
 std::vector<CRect> GameDisplay::getWallRegion(std::vector<std::pair<Point, int>> wall) const
 {
     std::vector<CRect> rects;
 	for (auto index = 0; index != wall.size(); ++index)
 	{
-		Point point = wall[index].first;
-		int type = wall[index].second;
-		if (type == 0)
-		{
-			auto region = mRegionWall[type][point.y * NUM_SQUARE + point.x];
-			rects.push_back(CRect(region.x - SIZE_SQUARE / 2, region.y - 4, region.x + SIZE_SQUARE / 2 + SIZE_SQUARE, region.y + 4));
-		}
-		else if (type == 1)
-		{
-			auto region = mRegionWall[type][point.y * NUM_SQUARE + point.x];
-			rects.push_back(CRect(region.x - 4, region.y - SIZE_SQUARE / 2 - SIZE_SQUARE, region.x + 4, region.y + SIZE_SQUARE / 2));
-		}
+        rects.push_back(getWallRegion(wall[index]));
 	}
 	return rects;
 }

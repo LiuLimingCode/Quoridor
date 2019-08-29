@@ -31,6 +31,7 @@ public:
 	~GameDisplay(void) = default;
 
 	CRect getPlayerRegion(Point point) const;
+    CRect getWallRegion(std::pair<Point, int> wall) const;
 	std::vector<CRect> getWallRegion(std::vector<std::pair<Point, int>> wall) const;
 	bool isBoardOn(Point point, Region region) const;
 	bool isWallOn(int type, Point point, Region region) const;
