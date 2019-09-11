@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GameData.h"
-#include "Global.h"
+#include "GameGlobal.h"
 #include <queue>
 
 std::vector<Point> GameData::getMoveVaild(int player) const

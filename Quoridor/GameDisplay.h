@@ -1,7 +1,12 @@
 #pragma once
 
-#include "Global.h"
 #include <vector>
+#include "GameGlobal.h"
+
+#define SIZE_SQUARE		40
+#define SIZE_WALL		8
+#define STARTAXIS_X		280
+#define STARTAXIS_Y		100
 
 struct Region {
 	int x = 0;
@@ -27,6 +32,7 @@ struct Region {
 class GameDisplay
 {
 public:
+
 	GameDisplay(void);
 	~GameDisplay(void) = default;
 
@@ -38,6 +44,7 @@ public:
 	Order getPositionToOrder(Point point) const;
 
 private:
+
 	std::vector<Region> mRegionBoard;
 	std::vector<Region> mRegionWall[2];
 };

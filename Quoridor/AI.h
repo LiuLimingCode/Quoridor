@@ -1,10 +1,14 @@
 #pragma once
-#include "Global.h"
+
 #include "GameData.h"
+#include "GameGlobal.h"
+
+class Order;
 
 class AI
 {
 public:
+
 	/*
 	 * AI类初始化函数
 	 * @param	depth
@@ -29,18 +33,8 @@ public:
 	 * @return	AI是否正在计算
 	 */
 	bool isRunning() const{ return isAIRunning; }
-	
-private:
-	bool isAIRunning;
-	int mSelfID;
-	int mRivalID;
-	int mThinkDepth;
-	long mTimeLimited;
 
-	class GameData* mGameData;
-	const class GameData* mGameDataBackup;
-	// 由于AI在计算的过程中会暂时修改游戏数据,为保证程序安全性,mGameDataBackup变量存储了真正的游戏数据
-	// mGameData为数据的拷贝,所有对游戏数据的改动均在mGameData上进行,所以不影响原数据.
+protected:
 
 	/*
 	 * alphaBeta算法程序,AI在getNextMove中会考虑所有己方下一步的所有可能的行动和对方会相应采取的措施
@@ -60,4 +54,17 @@ private:
 	int evaluate(void) const;
 
 	long long getSystemTime(void) const;
+	
+private:
+
+	bool isAIRunning;
+	int mSelfID;
+	int mRivalID;
+	int mThinkDepth;
+	long mTimeLimited;
+
+	class GameData* mGameData;
+	const class GameData* mGameDataBackup;
+	// 由于AI在计算的过程中会暂时修改游戏数据,为保证程序安全性,mGameDataBackup变量存储了真正的游戏数据
+	// mGameData为数据的拷贝,所有对游戏数据的改动均在mGameData上进行,所以不影响原数据.
 };

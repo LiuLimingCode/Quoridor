@@ -1,15 +1,16 @@
 #pragma once
 
-#include "Global.h"
 #include <iostream>
 #include <vector>
 #include "AI.h"
+#include "GameGlobal.h"
 #include <cstdlib>
 #include <ctime>
 
 class GameData
 {
 public:
+
 	GameData();
 
 	/*
@@ -207,17 +208,41 @@ public:
      */
 	std::vector<std::pair<Point, int>> getWallVaild(int player) const;
 
+	/*
+	 * 判断该坐标下的墙是否越界
+
+	 */
+	bool isWall(int x, int y) const;
+
+	/*
+	 * 判断该坐标下的点是否越界
+	 * @param	x
+	 *			横坐标
+	 */
+	bool isPoint(int x, int y) const;
+
+protected:
+
+	/*
+	 * 各个玩家的胜利条件
+	 * @note	注意：该这些函数不允许用户调用,用户可以使用isEnd()函数判断游戏是否结束
+	 *          但是可以通过重载该函数修改游戏的胜利条件
+	 */
+	bool isPlayer1Win(void) const { return CONDITION_PLAYER1_WIN(mPlayerPosition[0]) ? true : false; }
+	bool isPlayer2Win(void) const { return CONDITION_PLAYER2_WIN(mPlayerPosition[1]) ? true : false; }
+	bool isPlayer3Win(void) const { return CONDITION_PLAYER3_WIN(mPlayerPosition[2]) ? true : false; }
+	bool isPlayer4Win(void) const { return CONDITION_PLAYER4_WIN(mPlayerPosition[3]) ? true : false; }
+
+	/*
+	 * 各个玩家的起始条件
+	 * @note	注意：该这些函数不允许用户调用,但是可以通过重载该函数修改游戏的起始条件
+	 */
+	void setPlayer1Start(void) { CONDITION_PLAYER1_START(mPlayerPosition[0]); }
+	void setPlayer2Start(void) { CONDITION_PLAYER2_START(mPlayerPosition[1]); }
+	void setPlayer3Start(void) { CONDITION_PLAYER3_START(mPlayerPosition[2]); }
+	void setPlayer4Start(void) { CONDITION_PLAYER4_START(mPlayerPosition[3]); }
+
 private:
-
-    /*
-     * 判断该坐标下的墙是否越界
-     */
-    bool isWall(int x, int y) const;
-
-    /*
-     * 判断该坐标下的点是否越界
-     */
-    bool isPoint(int x, int y) const;
 
 	int mWallNum[PLAYER_NUM];
 
@@ -231,16 +256,10 @@ private:
 	//棋子位置
 	Point mPlayerPosition[PLAYER_NUM];
 
-	bool(GameData::* isPlayerWin[MAX_PLAYER_NUM])(void) const = { &GameData::isPlayer1Win, &GameData::isPlayer2Win, &GameData::isPlayer3Win, &GameData::isPlayer4Win };
-	bool isPlayer1Win(void) const { return CONDITION_PLAYER1_WIN(mPlayerPosition[0]) ? true : false; }
-	bool isPlayer2Win(void) const { return CONDITION_PLAYER2_WIN(mPlayerPosition[1]) ? true : false; }
-	bool isPlayer3Win(void) const { return CONDITION_PLAYER3_WIN(mPlayerPosition[2]) ? true : false; }
-	bool isPlayer4Win(void) const { return CONDITION_PLAYER4_WIN(mPlayerPosition[3]) ? true : false; }
+	bool(GameData::* isPlayerWin[MAX_PLAYER_NUM])(void) const = { 
+		&GameData::isPlayer1Win, &GameData::isPlayer2Win, &GameData::isPlayer3Win, &GameData::isPlayer4Win };
 	
-	void (GameData::* setPlayerStart[MAX_PLAYER_NUM])(void) = { &GameData::setPlayer1Start, &GameData::setPlayer2Start, &GameData::setPlayer3Start, &GameData::setPlayer4Start };
-	void setPlayer1Start(void) { CONDITION_PLAYER1_START(mPlayerPosition[0]); }
-	void setPlayer2Start(void) { CONDITION_PLAYER2_START(mPlayerPosition[1]); }
-	void setPlayer3Start(void) { CONDITION_PLAYER3_START(mPlayerPosition[2]); }
-	void setPlayer4Start(void) { CONDITION_PLAYER4_START(mPlayerPosition[3]); }
+	void (GameData::* setPlayerStart[MAX_PLAYER_NUM])(void) = { 
+		&GameData::setPlayer1Start, &GameData::setPlayer2Start, &GameData::setPlayer3Start, &GameData::setPlayer4Start };
 };
 

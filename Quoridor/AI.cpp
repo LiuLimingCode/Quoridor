@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "AI.h"
 #include "GameData.h"
+#include "GameGlobal.h"
 #include <sys/timeb.h>
 #include <algorithm>
 
