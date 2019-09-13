@@ -210,7 +210,9 @@
     <None Include="res\Quoridor.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\black.bmp" />
     <Image Include="res\Quoridor.ico" />
+    <Image Include="res\red.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

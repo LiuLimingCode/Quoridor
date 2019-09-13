@@ -6,7 +6,7 @@
 #define SIZE_SQUARE		40
 #define SIZE_WALL		8
 #define STARTAXIS_X		280
-#define STARTAXIS_Y		100
+#define STARTAXIS_Y		105
 
 struct Region {
 	int x = 0;
