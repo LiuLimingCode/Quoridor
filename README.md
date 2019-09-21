@@ -9,6 +9,7 @@
  - 软件截图
  
 ![软件截图](doc/Quoridor.png)
- - 程序参考
+
+ - 工程
  
- https://github.com/shiyicode/Quoridor
+Visual Studio 2019

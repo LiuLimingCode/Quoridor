@@ -1,11 +1,7 @@
 #pragma once
 
-#include <iostream>
 #include <vector>
-#include "AI.h"
 #include "GameGlobal.h"
-#include <cstdlib>
-#include <ctime>
 
 class GameData
 {
