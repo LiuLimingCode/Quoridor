@@ -1,3 +1,10 @@
+/*
+ * Quoridor游戏数据和相应的操作函数
+ * @author  刘力铭
+ * @version v1.3
+ * @Date    2019.9.27
+ */
+
 #pragma once
 
 #include <vector>

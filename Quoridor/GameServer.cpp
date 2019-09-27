@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "stdafx.h" // MFC的预编译头，如果不是MFC项目请删除该代码。 this is the head file of MFC projects. Please delete this code if you do not use it.
 #include "GameServer.h"
 
 int GameServer::GameHandle(void)

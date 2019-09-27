@@ -1,3 +1,10 @@
+/*
+ * QuoridorÓÎÏ·AI
+ * @author  ÁõÁ¦Ãú
+ * @version v1.3
+ * @Date    2019.9.27
+ */
+
 #pragma once
 
 #include "GameData.h"

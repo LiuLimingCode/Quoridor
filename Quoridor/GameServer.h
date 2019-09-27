@@ -1,12 +1,16 @@
+/*
+ * 该抽象类提供一个简单的游戏逻辑和相应接口供用户使用,用户也可以直接根据
+ * GameAI类和GameData类提供的函数自行设计.
+ * @author  刘力铭
+ * @version v1.3
+ * @Date    2019.9.27
+ */
+
 #pragma once
 
 #include "GameAI.h"
 #include "GameData.h"
 
-/*
- * 该抽象类提供一个简单的游戏逻辑和相应接口供用户使用,用户也可以直接根据
- * GameAI类和GameData类提供的函数自行设计.
- */
 class GameServer : public GameData
 {
 public:
