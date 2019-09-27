@@ -61,6 +61,7 @@ void GameServer::setGameAI(int id, int depth, long time)
 
 void GameServer::setGamePlayer(int id)
 {
+    if (mGameAI[id] != nullptr) delete mGameAI[id];
     mGameAI[id] = nullptr;
 }
 
