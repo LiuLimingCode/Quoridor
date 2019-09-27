@@ -1,6 +1,4 @@
-*.db
 Debug
 Release
-ipch
-/.vs/Quoridor/v16/ipch
+.vs
 bug.txt
