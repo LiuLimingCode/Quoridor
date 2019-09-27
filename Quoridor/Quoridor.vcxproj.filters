@@ -30,9 +30,6 @@
     <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AI.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="GameData.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -40,6 +37,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="GameGlobal.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GameAI.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GameServer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,13 +56,16 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AI.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="GameData.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="GameDisplay.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GameAI.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GameServer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

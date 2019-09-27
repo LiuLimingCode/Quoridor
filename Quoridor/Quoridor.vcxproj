@@ -184,10 +184,11 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AI.h" />
+    <ClInclude Include="GameAI.h" />
     <ClInclude Include="GameData.h" />
     <ClInclude Include="GameDisplay.h" />
     <ClInclude Include="GameGlobal.h" />
+    <ClInclude Include="GameServer.h" />
     <ClInclude Include="Quoridor.h" />
     <ClInclude Include="QuoridorDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -195,9 +196,10 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AI.cpp" />
+    <ClCompile Include="GameAI.cpp" />
     <ClCompile Include="GameData.cpp" />
     <ClCompile Include="GameDisplay.cpp" />
+    <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="Quoridor.cpp" />
     <ClCompile Include="QuoridorDlg.cpp" />
     <ClCompile Include="stdafx.cpp">

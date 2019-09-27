@@ -1,4 +1,4 @@
-#include "stdafx.h" // MFC的预编译头，如果不是MFC项目请删除该代码。 this is the head file of MFC projects. Please delete this code if you do not use it.
+#include "stdafx.h"
 #include "GameData.h"
 #include "GameGlobal.h"
 #include <queue>
@@ -197,6 +197,27 @@ std::vector<std::pair<Point, int>> GameData::getWallVaild(int player) const
 		}
 	}
 	return result;
+}
+
+void GameData::gotoOrder(int player, Order order)
+{
+	const int type = order.type;
+	const int x = order.point.x;
+	const int y = order.point.y;
+	switch (type) // 执行指令
+	{
+	case MOVE:
+		gotoMove(player, x, y);
+		break;
+	case WALLH:
+		gotoWall(player, type, x, y);
+		break;
+	case WALLV:
+		gotoWall(player, type, x, y);
+		break;
+	default:
+		break;
+	}
 }
 
 void GameData::gotoMove(int player, int x, int y)
