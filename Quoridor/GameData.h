@@ -220,7 +220,7 @@ public:
      *          玩家ID
      * @return  玩家在能够放墙的位置,返回类型为<墙的坐标,墙的类型>
      */
-    std::vector<std::pair<Point, int>> getWallVaild(int player) const;
+    std::vector<std::pair<Point, int>> getWallValid(int player) const;
 
     /*
      * 判断该坐标下的墙是否越界
@@ -256,7 +256,7 @@ protected:
     virtual void setPlayer3Start(void) { CONDITION_PLAYER3_START(mPlayerPosition[2]); }
     virtual void setPlayer4Start(void) { CONDITION_PLAYER4_START(mPlayerPosition[3]); }
 
-private:
+protected:
 
     int mWallNum[PLAYER_NUM];
 

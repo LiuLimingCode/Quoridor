@@ -1,4 +1,4 @@
-#include "stdafx.h" // MFC的预编译头，如果不是MFC项目请删除该代码。 this is the head file of MFC projects. Please delete this code if you do not use it.
+#include "stdafx.h" // MFC的预编译头，如果不是MFC项目请删除该代码。 this is the head file of MFC projects. Please delete this code if you
 #include "GameServer.h"
 
 int GameServer::GameHandle(void)
@@ -33,12 +33,12 @@ int GameServer::GameHandle(void)
         mTurn = (++mTurn) % PLAYER_NUM; // 表示下一个回合
     }
 
-    onGameStop();
+    onGameOver();
 
     return 0;
 }
 
-int GameServer::getCurrentTurn(void)
+int GameServer::getCurrentTurn(void) const
 {
     return mTurn;
 }
@@ -48,15 +48,27 @@ void GameServer::setWhoFirst(int id)
     mTurn = id; 
 }
 
-bool GameServer::isCurrentAITurn(void)
+bool GameServer::isCurrentAITurn(void) const
 {
     return ((mGameAI[mTurn] != nullptr) ? true : false);
+}
+
+GameAI* GameServer::getGameAI(int turn) const
+{
+    return mGameAI[turn];
 }
 
 void GameServer::setGameAI(int id, int depth, long time)
 {
     if (mGameAI[id] != nullptr) delete mGameAI[id];
-    mGameAI[id] = new GameAI(depth, id, time, this);
+    mGameAI[id] = new GameAI(depth, id, time);
+}
+
+void GameServer::setGameAI(GameAI* ai)
+{
+    int id = ai->getSelfID();
+    if (mGameAI[id] != nullptr) delete mGameAI[id];
+    mGameAI[id] = ai;
 }
 
 void GameServer::setGamePlayer(int id)

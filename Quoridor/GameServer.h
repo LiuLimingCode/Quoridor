@@ -23,8 +23,17 @@ public:
      *          AI的思考深度,即计算未来的多少步,见GameAI构造函数
      * @param   time
      *          AI计算的时间限制,见GameAI构造函数
+     * @note    该函数使用的AI为GameAI类,若需要使用用户派生的GameAI类,请使用setGameAI(GameAI* ai);函数
      */
     void setGameAI(int id, int depth, long time);
+
+    /*
+     * 设置游戏AI
+     * @param   ai
+     *          设置的AI
+     * @note    此函数用于设置用户派生的GameAI类
+     */
+    void setGameAI(GameAI* ai);
 
     /*
      * 设置游戏玩家
@@ -41,7 +50,7 @@ public:
     /*
      * 决策当前游戏回合的玩家id
      */
-    int getCurrentTurn(void);
+    int getCurrentTurn(void) const;
 
     /*
      * 设置先手
@@ -52,15 +61,24 @@ public:
 
     /*
      * 判断当前回合是否为AI决策的回合
+     * @return  true = 当前为AI决策回合;false = 当前为玩家决策回合
      */
-    bool isCurrentAITurn(void);
+    bool isCurrentAITurn(void) const;
+
+    /*
+     * 返回决策某个回合的游戏AI
+     * @param   turn
+     *          返回决策该回合的游戏AI
+     * @noto    如果当前回合由玩家决策,返回nullptr
+     */
+    GameAI* getGameAI(int turn) const;
 
     /*
      * @interface
      * Quoridor游戏的基础逻辑如下：
      * 
      * onGameStart(); // 游戏开始
-     * while(){ // 游戏循环
+     * while() { // 游戏循环
      * onBeforeOption(); // 在玩家和AI计算决策之前
      * 如果是AI回合调用onAIOption(),玩家回合调用onPlayerOption();
      * onExecuteOption(); // 执行决策
@@ -83,7 +101,7 @@ public:
      * 游戏结束,当游戏循环结束后即将退出GameHandle函数时调用该虚函数
      * @default 无程序
      */
-    virtual void onGameStop(void) {}
+    virtual void onGameOver(void) {}
 
     /*
      * @interface 
@@ -100,9 +118,9 @@ public:
      * @param   turn
      *          决策当前游戏回合的玩家id
      * @return  AI计算后得出下一步的决策
-     * @default return mGameAI[turn]->getNextMove(); //由AI计算下一步的操作
+     * @default return getGameAI(turn)->getNextMove(); //由AI计算下一步的操作
      */
-    virtual Order onAIOption(int turn) { return mGameAI[turn]->getNextMove(); }
+    virtual Order onAIOption(int turn) { return getGameAI(turn)->getNextMove(this); }
 
     /*
      * @interface
@@ -145,10 +163,10 @@ public:
      */
     virtual void onGameWin(int player) {}
 
-private:
+protected:
 
     GameAI * mGameAI[PLAYER_NUM] = { nullptr };
     int mTurn = 0;
-    volatile bool isGameStart = false;
+    bool isGameStart = false;
 };
 

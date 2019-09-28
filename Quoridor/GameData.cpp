@@ -1,4 +1,4 @@
-#include "stdafx.h" // MFC的预编译头，如果不是MFC项目请删除该代码。 this is the head file of MFC projects. Please delete this code if you do not use it.
+#include "stdafx.h" // MFC的预编译头，如果不是MFC项目请删除该代码。 this is the head file of MFC projects. Please delete this code if you
 #include "GameData.h"
 #include "GameGlobal.h"
 #include <queue>
@@ -170,7 +170,7 @@ void GameData::resetGame(void)
 		(this->*setPlayerStart[player])();
 		mOrderBuffer[player].clear();
 		mBoard[mPlayerPosition[player].x][mPlayerPosition[player].y] = true;
-		mOrderBuffer[player].push_back(Order(MOVE, mPlayerPosition[player]));
+		mOrderBuffer[player].push_back(Order(OrderType::MOVE, mPlayerPosition[player]));
 	}
 
 	for (int player = 0; player < PLAYER_NUM; ++player) {
@@ -178,7 +178,7 @@ void GameData::resetGame(void)
 	}
 }
 
-std::vector<std::pair<Point, int>> GameData::getWallVaild(int player) const
+std::vector<std::pair<Point, int>> GameData::getWallValid(int player) const
 {
 	std::vector<std::pair<Point, int>> result;
 
@@ -206,13 +206,13 @@ void GameData::gotoOrder(int player, Order order)
 	const int y = order.point.y;
 	switch (type) // 执行指令
 	{
-	case MOVE:
+	case OrderType::MOVE:
 		gotoMove(player, x, y);
 		break;
-	case WALLH:
+	case OrderType::WALLH:
 		gotoWall(player, type, x, y);
 		break;
-	case WALLV:
+	case OrderType::WALLV:
 		gotoWall(player, type, x, y);
 		break;
 	default:
@@ -228,7 +228,7 @@ void GameData::gotoMove(int player, int x, int y)
 	for (int index = 0; index < PLAYER_NUM; ++index) {
 		mPlayerShortLength[index] = getShortPath(index);
 	}
-	mOrderBuffer[player].push_back(Order(MOVE, Point(x, y)));
+	mOrderBuffer[player].push_back(Order(OrderType::MOVE, Point(x, y)));
 }
 
 void GameData::setMove(int player, int x, int y)
@@ -373,15 +373,15 @@ bool GameData::checkOrder(int player, Order order) const
 	const int type = order.type;
 	const int x = order.point.x;
 	const int y = order.point.y;
-	if (type == MOVE && checkMove(player, x, y))
+	if (type == OrderType::MOVE && checkMove(player, x, y))
 	{
 		return true;
 	}
-	else if (type == WALLH && checkWall(player, type, x, y))
+	else if (type == OrderType::WALLH && checkWall(player, type, x, y))
 	{
 		return true;
 	}
-	else if (type == WALLV && checkWall(player, type, x, y))
+	else if (type == OrderType::WALLV && checkWall(player, type, x, y))
 	{
 		return true;
 	}
@@ -464,12 +464,12 @@ void GameData::undoGame(void)
     {
         Order order = mOrderBuffer[player].back();
         mOrderBuffer[player].pop_back();
-        if (order.type == MOVE)
+        if (order.type == OrderType::MOVE)
         {
             Point pOld;
             for (int index = mOrderBuffer[player].size() - 1; index >= 0; --index)
             {
-                if (mOrderBuffer[player].at(index).type == MOVE)
+                if (mOrderBuffer[player].at(index).type == OrderType::MOVE)
                 {
                     pOld = mOrderBuffer[player].at(index).point;
                     break;

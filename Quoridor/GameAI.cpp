@@ -1,4 +1,4 @@
-#include "stdafx.h" // MFC的预编译头，如果不是MFC项目请删除该代码。 this is the head file of MFC projects. Please delete this code if you do not use it.
+#include "stdafx.h" // MFC的预编译头，如果不是MFC项目请删除该代码。 this is the head file of MFC projects. Please delete this code if you
 #include "GameAI.h"
 #include "GameData.h"
 #include "GameGlobal.h"
@@ -16,33 +16,31 @@ struct MoveNode {
     Order order;
 };
 
-GameAI::GameAI(int depth, int id, long time, const GameData* gameData)
+GameAI::GameAI(int depth, int id, long time)
 {
     mThinkDepth = depth;
     mSelfID = id;
     mRivalID = 1 - id;
     mTimeLimited = time;
-    mGameDataBackup = gameData;
     isAIRunning = false;
 }
 
-Order GameAI::getNextMove(void)
+Order GameAI::getNextMove(const GameData* gameData)
 {
     isAIRunning = true;
-    mGameData = new GameData(*mGameDataBackup);
+    mGameData = new GameData(*gameData);
     long long startTime = getSystemTime();
 
     std::vector<MoveNode> moveVt;
 
     std::vector<Point> moves = mGameData->getMoveVaild(mSelfID);
-    std::vector<std::pair<Point, int>> wallMoves = mGameData->getWallVaild(mSelfID);
+    std::vector<std::pair<Point, int>> wallMoves = mGameData->getWallValid(mSelfID);
 
     for (auto move : moves)
     {
         //2表示落子
         moveVt.push_back(MoveNode(0, 2, move));
     }
-
 
     for (auto wallMove : wallMoves)
     {
@@ -71,7 +69,7 @@ Order GameAI::getNextMove(void)
             int x = moveVt[i].order.point.x;
             int y = moveVt[i].order.point.y;
 
-            if (moveVt[i].order.type == 2)//表示走子
+            if (moveVt[i].order.type == OrderType::MOVE)//表示走子
             {
                 auto tempPos = mGameData->getCurrentPosition(mSelfID);
                 mGameData->setMove(mSelfID, x, y);
@@ -130,7 +128,7 @@ long GameAI::alphaBeta(int depth, int player, long alpha, long beta)
             alpha = val;
     }
 
-    std::vector<std::pair<Point, int>> wallMoves = mGameData->getWallVaild(player);
+    std::vector<std::pair<Point, int>> wallMoves = mGameData->getWallValid(player);
 
     for (auto wallMove : wallMoves)
     {
