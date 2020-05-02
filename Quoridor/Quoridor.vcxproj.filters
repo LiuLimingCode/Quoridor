@@ -62,10 +62,10 @@
     <ClCompile Include="GameDisplay.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="GameAI.cpp">
+    <ClCompile Include="GameServer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="GameServer.cpp">
+    <ClCompile Include="AlphaBeta.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

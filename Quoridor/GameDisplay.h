@@ -15,15 +15,15 @@ struct Region {
 	int numy = 0;
 	bool isBoardOn(Point point) {
 		bool flag = false;
-		if (point.x < x + 15 && point.x > x - 15 && point.y < y + 15 && point.y > y - 15)
+		if (point.row < x + 15 && point.row > x - 15 && point.col < y + 15 && point.col > y - 15)
 			flag = true;
 		return flag;
 	}
 	bool isWallOn(int type, Point point) {
 		bool flag = false;
-		if (type == 0 && point.x < x + 15 && point.x > x - 15 && point.y < y + 4 && point.y > y - 4)
+		if (type == 0 && point.row < x + 15 && point.row > x - 15 && point.col < y + 4 && point.col > y - 4)
 			flag = true;
-		if (type == 1 && point.x < x + 4 && point.x > x - 4 && point.y < y + 15 && point.y > y - 15)
+		if (type == 1 && point.row < x + 4 && point.row > x - 4 && point.col < y + 15 && point.col > y - 15)
 			flag = true;
 		return flag;
 	}

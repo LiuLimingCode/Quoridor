@@ -41,7 +41,7 @@ GameDisplay::GameDisplay(void)
 
 CRect GameDisplay::getPlayerRegion(Point point) const
 {
-	auto region = mRegionBoard[point.y * NUM_SQUARE + point.x];
+	auto region = mRegionBoard[point.col * NUM_SQUARE + point.row];
 
 	CRect rect;
 	rect.left = region.x - 15;
@@ -58,12 +58,12 @@ CRect GameDisplay::getWallRegion(std::pair<Point, int> wall) const
     int type = wall.second;
     if (type == 0)
     {
-        auto region = mRegionWall[type][point.y * (NUM_SQUARE - 1) + point.x];
+        auto region = mRegionWall[type][point.col * (NUM_SQUARE - 1) + point.row];
         rect = CRect(region.x - SIZE_SQUARE / 2, region.y - 4, region.x + SIZE_SQUARE / 2 + SIZE_SQUARE, region.y + 4);
     }
     else if (type == 1)
     {
-        auto region = mRegionWall[type][point.y * (NUM_SQUARE - 1) + point.x];
+        auto region = mRegionWall[type][point.col * (NUM_SQUARE - 1) + point.row];
         rect = CRect(region.x - 4, region.y - SIZE_SQUARE / 2 - SIZE_SQUARE, region.x + 4, region.y + SIZE_SQUARE / 2);
     }
     return rect;
@@ -82,7 +82,7 @@ std::vector<CRect> GameDisplay::getWallRegion(std::vector<std::pair<Point, int>>
 bool GameDisplay::isBoardOn(Point point, Region region) const
 {
 	bool flag = false;
-	if (point.x < region.x + 15 && point.x > region.x - 15 && point.y < region.y + 15 && point.y > region.y - 15)
+	if (point.row < region.x + 15 && point.row > region.x - 15 && point.col < region.y + 15 && point.col > region.y - 15)
 		flag = true;
 	return flag;
 }
@@ -90,9 +90,9 @@ bool GameDisplay::isBoardOn(Point point, Region region) const
 bool GameDisplay::isWallOn(int type, Point point, Region region) const
 {
 	bool flag = false;
-	if (type == 0 && point.x < region.x + 17 && point.x > region.x - 17 && point.y < region.y + 4 && point.y > region.y - 4)
+	if (type == 0 && point.row < region.x + 17 && point.row > region.x - 17 && point.col < region.y + 4 && point.col > region.y - 4)
 		flag = true;
-	if (type == 1 && point.x < region.x + 4 && point.x > region.x - 4 && point.y < region.y + 17 && point.y > region.y - 17)
+	if (type == 1 && point.row < region.x + 4 && point.row > region.x - 4 && point.col < region.y + 17 && point.col > region.y - 17)
 		flag = true;
 	return flag;
 }

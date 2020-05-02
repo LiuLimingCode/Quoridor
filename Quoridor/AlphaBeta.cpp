@@ -1,4 +1,4 @@
-#include "stdafx.h" // MFC的预编译头，如果不是MFC项目请删除该代码。 this is the head file of MFC projects. Please delete this code if you
+#include "stdafx.h" // 如果不是MFC项目请删除该代码。 Please delete this code if it is not a MFC program
 #include "GameAI.h"
 #include "GameData.h"
 #include "GameGlobal.h"
@@ -16,25 +16,25 @@ struct MoveNode {
     Order order;
 };
 
-GameAI::GameAI(int depth, int id, long time)
+AlphaBeta::AlphaBeta(int depth, long time)
 {
     mThinkDepth = depth;
-    mSelfID = id;
-    mRivalID = 1 - id;
     mTimeLimited = time;
     isAIRunning = false;
 }
 
-Order GameAI::getNextMove(const GameData* gameData)
+Order AlphaBeta::getNextMove(int id, const GameData* gameData)
 {
     isAIRunning = true;
+    mSelfID = id;
+    mRivalID = 1 - id;
     mGameData = new GameData(*gameData);
     long long startTime = getSystemTime();
 
     std::vector<MoveNode> moveVt;
 
-    std::vector<Point> moves = mGameData->getMoveVaild(mSelfID);
-    std::vector<std::pair<Point, int>> wallMoves = mGameData->getWallValid(mSelfID);
+    std::vector<Point> moves = mGameData->getNextMoveVaild(mSelfID, true);
+    std::vector<std::pair<Point, int>> wallMoves = mGameData->getNextWallValid(mSelfID);
 
     for (auto move : moves)
     {
@@ -57,7 +57,7 @@ Order GameAI::getNextMove(const GameData* gameData)
         if (timeLen >= mTimeLimited)
         {
 //            log("%fs %d层", timeLen / 1000.0, i_depth);
-            break;
+            //break;
         }
         long val;
         long alpha = -1000000;
@@ -66,21 +66,21 @@ Order GameAI::getNextMove(const GameData* gameData)
 
         for (size_t i = 0; i < size; i++)
         {
-            int x = moveVt[i].order.point.x;
-            int y = moveVt[i].order.point.y;
+            int row = moveVt[i].order.point.row;
+            int col = moveVt[i].order.point.col;
 
             if (moveVt[i].order.type == OrderType::MOVE)//表示走子
             {
                 auto tempPos = mGameData->getCurrentPosition(mSelfID);
-                mGameData->setMove(mSelfID, x, y);
+                mGameData->setMove(mSelfID, row, col);
                 val = -alphaBeta(i_depth, mRivalID, -beta, -alpha);
-                mGameData->setMove(mSelfID, tempPos.x, tempPos.y);
+                mGameData->setMove(mSelfID, tempPos.row, tempPos.col);
             }
             else
             {
-                mGameData->setWall(mSelfID, moveVt[i].order.type, x, y);
+                mGameData->setWall(mSelfID, moveVt[i].order.type, row, col);
                 val = -alphaBeta(i_depth, mRivalID, -beta, -alpha);
-                mGameData->resetWall(moveVt[i].order.type, x, y);
+                mGameData->resetWall(moveVt[i].order.type, row, col);
             }
 
             if (val > alpha)
@@ -101,40 +101,40 @@ Order GameAI::getNextMove(const GameData* gameData)
     return Order(ans.order.type, ans.order.point);
 }
 
-long GameAI::alphaBeta(int depth, int player, long alpha, long beta)
+long AlphaBeta::alphaBeta(int depth, int pawn, long alpha, long beta)
 {
     if (depth == 0)
     {
         long score = evaluate();
-        if (player == mRivalID)
+        if (pawn == mRivalID)
             score = -score;
 
         return score;
     }
 
-    std::vector<Point> moves = mGameData->getMoveVaild(player);
+    std::vector<Point> moves = mGameData->getNextMoveVaild(pawn, true);
 
     long val;
 
     for (auto move : moves)
     {
-        Point tempPos = mGameData->getCurrentPosition(player);
-        mGameData->setMove(player, move.x, move.y);
-        val = -alphaBeta(depth - 1, 1 - player, -beta, -alpha);
-        mGameData->setMove(player, tempPos.x, tempPos.y);
+        Point tempPos = mGameData->getCurrentPosition(pawn);
+        mGameData->setMove(pawn, move.row, move.col);
+        val = -alphaBeta(depth - 1, 1 - pawn, -beta, -alpha);
+        mGameData->setMove(pawn, tempPos.row, tempPos.col);
         if (val >= beta)
             return beta;
         if (val > alpha)
             alpha = val;
     }
 
-    std::vector<std::pair<Point, int>> wallMoves = mGameData->getWallValid(player);
+    std::vector<std::pair<Point, int>> wallMoves = mGameData->getNextWallValid(pawn);
 
     for (auto wallMove : wallMoves)
     {
-        mGameData->setWall(player, wallMove.second, (int)wallMove.first.x, (int)wallMove.first.y);
-        val = -alphaBeta(depth - 1, 1 - player, -beta, -alpha);
-        mGameData->resetWall(wallMove.second, (int)wallMove.first.x, (int)wallMove.first.y);
+        mGameData->setWall(pawn, wallMove.second, (int)wallMove.first.row, (int)wallMove.first.col);
+        val = -alphaBeta(depth - 1, 1 - pawn, -beta, -alpha);
+        mGameData->resetWall(wallMove.second, (int)wallMove.first.row, (int)wallMove.first.col);
 
         if (val >= beta)
             return beta;
@@ -145,7 +145,7 @@ long GameAI::alphaBeta(int depth, int player, long alpha, long beta)
     return alpha;
 }
 
-int GameAI::evaluate(void) const
+int AlphaBeta::evaluate(void) const
 {
     int selfShortLength = mGameData->getShortPath(mSelfID);
     int rivalShortLength = mGameData->getShortPath(mRivalID);
@@ -164,7 +164,7 @@ int GameAI::evaluate(void) const
     return score;
 }
 
-long long GameAI::getSystemTime(void) const
+long long AlphaBeta::getSystemTime(void) const
 {
     struct timeb t;
     ftime(&t);

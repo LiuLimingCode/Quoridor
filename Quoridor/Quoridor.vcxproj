@@ -196,7 +196,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameAI.cpp" />
+    <ClCompile Include="AlphaBeta.cpp" />
     <ClCompile Include="GameData.cpp" />
     <ClCompile Include="GameDisplay.cpp" />
     <ClCompile Include="GameServer.cpp" />
