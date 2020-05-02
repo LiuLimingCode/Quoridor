@@ -161,31 +161,12 @@ GameData::GameData(int boardSize) {
 	resetGame(boardSize);
 }
 
-/*GameData::GameData(const GameData& copyData) {
-	mWall = copyData.mWall;
-	for (int pawn = 0; pawn < PAWN_NUM; ++pawn) {
-		mWallNum[pawn] = copyData.mWallNum[pawn];
-		mOrderBuffer[pawn] = copyData.mOrderBuffer[pawn];
-		mPawnShortLength[pawn] = copyData.mPawnShortLength[pawn];
-		mPawnPosition[pawn] = copyData.mPawnPosition[pawn];
-		isPawnWin[pawn] = copyData.isPawnWin[pawn];
-		setPawnStart[pawn] = copyData.setPawnStart[pawn];
-	}
-}*/
-
 void GameData::resetGame(int boardSize)
 {
 	mBoardSize = boardSize;
 	for (int temp = 0; temp < 2; ++temp) {
 		mWall[temp] = Array2D<int>(mBoardSize, mBoardSize, 0);
 	}
-
-	/*for (int i = 0; i < mBoardSize; i++) {
-		for (int j = 0; j < mBoardSize; j++) {
-			mWall[0][i][j] = 0;
-			mWall[1][i][j] = 0;
-		}
-	}*/
 
 	for (int pawn = 0; pawn < PAWN_NUM; ++pawn) {
 		mWallNum[pawn] = WALLNUM;
@@ -228,48 +209,41 @@ void GameData::setOrder(int pawn, Order order)
 	switch (type) // Ö´ÐÐÖ¸Áî
 	{
 	case OrderType::MOVE:
-		setMove(pawn, row, col, true);
+		setMove(pawn, row, col);
 		break;
 	case OrderType::WALLH:
-		setWall(pawn, type, row, col, true);
+		if (mWallNum[pawn] > 0) {
+			mWallNum[pawn] --;
+			setWall(pawn, type, row, col);
+		}
 		break;
 	case OrderType::WALLV:
-		setWall(pawn, type, row, col, true);
+		if (mWallNum[pawn] > 0) {
+			mWallNum[pawn] --;
+			setWall(pawn, type, row, col);
+		}
 		break;
 	default:
 		break;
 	}
+
+	mOrderBuffer[pawn].push_back(Order(OrderType::MOVE, Point(row, col)));
+	for (int index = 0; index < PAWN_NUM; ++index) {
+		mPawnShortLength[index] = getShortPath(index);
+	}
 }
 
-void GameData::setMove(int pawn, int row, int col, bool isOfficial)
+void GameData::setMove(int pawn, int row, int col)
 {
 	mPawnPosition[pawn] = Point(row, col);
-    if (isOfficial) {
-        for (int index = 0; index < PAWN_NUM; ++index) {
-            mPawnShortLength[index] = getShortPath(index);
-        }
-        mOrderBuffer[pawn].push_back(Order(OrderType::MOVE, Point(row, col)));
-    }
 }
 
-void GameData::setWall(int pawn, int type, int row, int col, bool isOfficial) {
-    if (pawn >= 0) {
-        mWall[type][row][col] = pawn + 1;
-        mWallNum[pawn]--;
-    }
-    else {
-        if (mWall[type][row][col] > 0) {
-            mWallNum[mWall[type][row][col] - 1]++;
-            mWall[type][row][col] = 0;
-        }
-    }
+void GameData::setWall(int pawn, int type, int row, int col) {
+    mWall[type][row][col] = pawn + 1;
+}
 
-    if (pawn >= 0 && isOfficial) {
-        for (int index = 0; index < PAWN_NUM; ++index) {
-            mPawnShortLength[index] = getShortPath(index);
-        }
-        mOrderBuffer[pawn].push_back(Order(type, Point(row, col)));
-    }
+void GameData::resetWall(int type, int row, int col) {
+	mWall[type][row][col] = 0;
 }
 
 int GameData::getShortPath(int pawn) const
@@ -288,7 +262,7 @@ int GameData::getShortPath(int pawn) const
 		auto now = queue.front();
 		queue.pop();
 
-		tempData.setMove(pawn, now.first.row, now.first.col, false);
+		tempData.setMove(pawn, now.first.row, now.first.col);
 		auto moves = tempData.getNextMoveVaild(pawn, false);
 
 		if ((tempData.*isPawnWin[pawn])() == true)
@@ -324,7 +298,7 @@ bool GameData::isPoint(int row, int col) const
 	return false;
 }
 
-int GameData::isEnd(void) const
+int GameData::isGameEnd(void) const
 {
 	int temp = EMPTY;
 	for (int pawn = 0; pawn < PAWN_NUM; ++pawn) {
@@ -404,14 +378,13 @@ bool GameData::checkWall(int pawn, int type, int row, int col) const
 			&& (!isWall(row + 1, col) || mWall[0][row + 1][col] == 0)
 			&& mWall[1][row][col] == 0)
 		{
-			tempData.setWall(0, type, row, col, false);
+			tempData.setWall(0, type, row, col);
 			bool isReachable = true;
 			for (int index = 0; index < PAWN_NUM; ++index) {
 				if (tempData.getShortPath(index) == -1) {
 					isReachable = false; break;
 				}
 			}
-			tempData.setWall(-1, type, row, col, false);
 			if (isReachable == true)
 				return true;
 		}
@@ -424,14 +397,13 @@ bool GameData::checkWall(int pawn, int type, int row, int col) const
 			&& (!isWall(row, col + 1) || mWall[1][row][col + 1] == 0)
 			&& mWall[0][row][col] == 0)
 		{
-			tempData.setWall(0, type, row, col, false);
+			tempData.setWall(0, type, row, col);
 			bool isReachable = true;
 			for (int index = 0; index < PAWN_NUM; ++index) {
 				if (tempData.getShortPath(index) == -1) {
 					isReachable = false; break;
 				}
 			}
-			tempData.setWall(-1, type, row, col, false);
 			if (isReachable == true)
 				return true;
 		}
@@ -474,7 +446,7 @@ void GameData::undoGame(void)
                     break;
                 }
             }
-            setMove(pawn, pOld.row, pOld.col, false);
+            setMove(pawn, pOld.row, pOld.col);
         }
         else
         {

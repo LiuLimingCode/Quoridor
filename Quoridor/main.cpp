@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	Quoridor.resetGame();
 	Quoridor.setGameAI(PAWN2, new AlphaBeta(1, 5000));
 	Quoridor.setGamePlayer(PAWN1);
-    //Quoridor.setGameAI(PAWN1, new AlphaBeta(1, 5000));
+	//Quoridor.setGameAI(PAWN1, new AlphaBeta(1, 5000));
 	Quoridor.GameHandle();
 	system("pause");
 	return 0;

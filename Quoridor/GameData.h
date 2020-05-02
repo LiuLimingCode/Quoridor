@@ -10,47 +10,12 @@
 #include <vector>
 #include "GameGlobal.h"
 
-/*class WallArray {
-public:
-    Array2D<int> wallArray[2];
-
-    Array2D<int>& vertical = wallArray[0];
-    Array2D<int>& horizontal = wallArray[1];
-
-    WallArray(int numOfRow = NUM_SQUARE, int numOfCol = NUM_SQUARE, int initValue = 0) {
-        for (int temp = 0; temp < 2; ++temp) {
-            wallArray[temp] = Array2D<int>(numOfRow, numOfCol, initValue);
-        }
-    }
-
-    WallArray(const WallArray& copyArray) {
-        *this = copyArray;
-    }
-
-    void operator=(const WallArray& copyArray) {
-        for (int temp = 0; temp < 2; ++temp) {
-            for (int temp = 0; temp < 2; ++temp) {
-                wallArray[temp] = copyArray.wallArray[temp];
-            }
-        }
-    }
-
-    const Array2D<int>& operator[](int index) const {
-        return wallArray[index];
-    }
-
-    Array2D<int>& operator[](int index) {
-        return wallArray[index];
-    }
-};*/
-
 class GameData
 {
 public:
 
     GameData() = default;
     GameData(int boardSize);
-    //GameData(const GameData& copyData);
 
     /*
      * 重新开始游戏
@@ -68,8 +33,8 @@ public:
      *          棋子ID
      * @param   order
      *          需要执行的指令
-     * @note    注意：gotoOrder函数相当于程序基于Order的类型,自动调用对于的
-     *          gotoMove和gotoWall函数.其他注意请看gotoOrder和gotoWall函数.
+     * @note    注意：setOrder函数相当于程序基于Order的类型,自动调用对于的
+     *          setMove和setWall函数.
      */
     void setOrder(int pawn, Order order);
 
@@ -81,11 +46,19 @@ public:
      *          棋子走棋的横坐标
      * @param   col
      *          棋子走棋的纵坐标
-     * @note    注意：相较于setMove和resetMove,gotoMove是正式的走棋函数,在执行
-     *          该函数前,应该用checkMove检测走棋是否合乎规则.在该函数执行后,
-     *          会自动执行getShortPath函数得到当前的最短距离,并且将该指令记录.
      */
-    void setMove(int pawn, int row, int col, bool isOfficial);
+    void setMove(int pawn, int row, int col);
+
+    /*
+     * 取消某位置的墙
+     * @param   type
+     *          墙的类型,0代表横墙,1代表竖墙,见Order_type
+     * @param   row
+     *          棋子墙的横坐标
+     * @param   col
+     *          棋子墙的纵坐标
+     */
+    void setWall(int pawn, int type, int row, int col);
 
     /*
      * 棋子放墙到某坐标
@@ -97,11 +70,8 @@ public:
      *          棋子墙的横坐标
      * @param   col
      *          棋子墙的纵坐标
-     * @note    注意：相较于setWall和resetMove,gotoWall是正式的放墙函数,在执行
-     *          该函数前,应该用checkWall检测放墙是否合乎规则.在该函数执行后,
-     *          会自动执行getShortPath函数得到当前的最短距离,并且将该指令记录.
      */
-    void setWall(int pawn, int type, int row, int col, bool isOfficial);
+    void resetWall(int type, int row, int col);
 
     /*
      * 得到某棋子到终点的最短路径
@@ -118,7 +88,7 @@ public:
      * 判断是否有棋子到终点
      * @return  到终点棋子的ID,如果没有棋子到终点,返回-1,见PLAYERID枚举体
      */
-    int isEnd(void) const;
+    int isGameEnd(void) const;
 
     /*
      * 判断指令是否合乎规则
@@ -230,8 +200,6 @@ protected:
      */
     virtual bool isPawn1Win(void) const { return CONDITION_PAWN1_WIN(mPawnPosition[0]) ? true : false; }
     virtual bool isPawn2Win(void) const { return CONDITION_PAWN2_WIN(mPawnPosition[1]) ? true : false; }
-    virtual bool isPawn3Win(void) const { return CONDITION_PAWN3_WIN(mPawnPosition[2]) ? true : false; }
-    virtual bool isPawn4Win(void) const { return CONDITION_PAWN4_WIN(mPawnPosition[3]) ? true : false; }
 
     /*
      * 各个棋子的起始条件
@@ -239,8 +207,6 @@ protected:
      */
     virtual void setPawn1Start(void) { CONDITION_PAWN1_START(mPawnPosition[0]); }
     virtual void setPawn2Start(void) { CONDITION_PAWN2_START(mPawnPosition[1]); }
-    virtual void setPawn3Start(void) { CONDITION_PAWN3_START(mPawnPosition[2]); }
-    virtual void setPawn4Start(void) { CONDITION_PAWN4_START(mPawnPosition[3]); }
 
 protected:
 
@@ -248,6 +214,8 @@ protected:
     //validNextWalls
     //_validNextPositions
     //_validNextPositionsUpdated
+
+    int mTurn;
 
     int mWallNum[PAWN_NUM];
 
@@ -263,9 +231,9 @@ protected:
     Point mPawnPosition[PAWN_NUM];
 
     bool(GameData::* isPawnWin[MAX_PAWN_NUM])(void) const = {
-        &GameData::isPawn1Win, &GameData::isPawn2Win, &GameData::isPawn3Win, &GameData::isPawn4Win };
+        &GameData::isPawn1Win, &GameData::isPawn2Win };
     
     void (GameData::* setPawnStart[MAX_PAWN_NUM])(void) = {
-        &GameData::setPawn1Start, &GameData::setPawn2Start, &GameData::setPawn3Start, &GameData::setPawn4Start };
+        &GameData::setPawn1Start, &GameData::setPawn2Start };
 };
 

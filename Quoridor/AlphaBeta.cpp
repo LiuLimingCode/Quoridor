@@ -71,15 +71,15 @@ Order AlphaBeta::getNextMove(int id, const GameData* gameData)
             if (moveVt[i].order.type == OrderType::MOVE)//表示走子
             {
                 auto tempPos = mGameData->getCurrentPosition(mSelfID);
-                mGameData->setMove(mSelfID, row, col, false);
+                mGameData->setMove(mSelfID, row, col);
                 val = -alphaBeta(i_depth, mRivalID, -beta, -alpha);
-                mGameData->setMove(mSelfID, tempPos.row, tempPos.col, false);
+                mGameData->setMove(mSelfID, tempPos.row, tempPos.col);
             }
             else
             {
-                mGameData->setWall(mSelfID, moveVt[i].order.type, row, col, false);
+                mGameData->setWall(mSelfID, moveVt[i].order.type, row, col);
                 val = -alphaBeta(i_depth, mRivalID, -beta, -alpha);
-                mGameData->setWall(-1, moveVt[i].order.type, row, col, false);
+                mGameData->resetWall(moveVt[i].order.type, row, col);
             }
 
             if (val > alpha)
@@ -118,9 +118,9 @@ long AlphaBeta::alphaBeta(int depth, int pawn, long alpha, long beta)
     for (auto move : moves)
     {
         Point tempPos = mGameData->getCurrentPosition(pawn);
-        mGameData->setMove(pawn, move.row, move.col, false);
+        mGameData->setMove(pawn, move.row, move.col);
         val = -alphaBeta(depth - 1, 1 - pawn, -beta, -alpha);
-        mGameData->setMove(pawn, tempPos.row, tempPos.col, false);
+        mGameData->setMove(pawn, tempPos.row, tempPos.col);
         if (val >= beta)
             return beta;
         if (val > alpha)
@@ -131,9 +131,9 @@ long AlphaBeta::alphaBeta(int depth, int pawn, long alpha, long beta)
 
     for (auto wallMove : wallMoves)
     {
-        mGameData->setWall(pawn, wallMove.second, (int)wallMove.first.row, (int)wallMove.first.col, false);
+        mGameData->setWall(pawn, wallMove.second, (int)wallMove.first.row, (int)wallMove.first.col);
         val = -alphaBeta(depth - 1, 1 - pawn, -beta, -alpha);
-        mGameData->setWall(-1, wallMove.second, (int)wallMove.first.row, (int)wallMove.first.col, false);
+        mGameData->resetWall(wallMove.second, (int)wallMove.first.row, (int)wallMove.first.col);
 
         if (val >= beta)
             return beta;

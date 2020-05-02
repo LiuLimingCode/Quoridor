@@ -9,13 +9,13 @@
 struct MoveNode {
 public:
     
-    bool isTerminal = false;
+    Order mOrder;
+    MoveNode* mParent = nullptr;
+    long mUctConst = 0;
     int mNumWins = 0;
     int mNumSims = 0;
-    long mUctConst = 0;
     std::vector<MoveNode *> mChildren;
-    MoveNode* mParent = nullptr;
-    Order mOrder;
+    bool isTerminal = false;
 
 public:
     MoveNode(Order move, MoveNode* parent, long uctConst) {
@@ -104,9 +104,9 @@ public:
         mChildren.push_back(childNode);
     }
 };
-/*
 
-struct MonteCarloTreeSearch {
+
+/*struct MonteCarloTreeSearch {
 
     GameData* game;
     long uctConst;
@@ -149,7 +149,7 @@ struct MonteCarloTreeSearch {
         while (stack.size() > 0) {
             const Order move = stack.back();
             stack.pop_back();
-            simulationGame.doMove(move);
+            simulationGame.setOrder(mSelfID, move);
         }
         return simulationGame;
     }
@@ -289,6 +289,7 @@ struct MonteCarloTreeSearch {
             ancestorPawnIndex = (ancestorPawnIndex + 1) % 2;
         }
     }
+
     void search(int numOfSimulations) {
         const long uctConst = this->uctConst;
 
@@ -372,11 +373,12 @@ struct MonteCarloTreeSearch {
             }
         }
     }
-}
-*/
+}*/
 
-MonteCarlo::MonteCarlo(int depth, long time)
+
+MonteCarlo::MonteCarlo(int id, int depth, long time)
 {
+    mSelfID = id;
     mThinkDepth = depth;
     mTimeLimited = time;
     isAIRunning = false;

@@ -24,9 +24,9 @@ int GameServer::GameHandle(void)
 
         onGameTurnEnd(mTurn, order);
 
-        if (isEnd() != -1) // 游戏是否结束
+        if (isGameEnd() != -1) // 游戏是否结束
         {
-            onGameWin(isEnd());
+            onGameWin(isGameEnd());
             isGameStart = false;
         }
         mTurn = (++mTurn) % PAWN_NUM; // 表示下一个回合

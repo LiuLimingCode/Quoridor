@@ -87,7 +87,7 @@ public:
      * @param   time
      *          AI计算的时间限制,若AI的思考深度大,则消耗的时间大,若已经消耗的时间大于该时间限制,AI停止计算
      */
-    MonteCarlo(int depth, long time);
+    MonteCarlo(int id, int depth, long time);
 
 protected:
 
