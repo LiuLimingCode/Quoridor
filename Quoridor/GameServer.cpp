@@ -1,4 +1,3 @@
-#include "stdafx.h" // MFC的预编译头，如果不是MFC项目请删除该代码。 this is the head file of MFC projects. Please delete this code if you
 #include "GameServer.h"
 
 int GameServer::GameHandle(void)
@@ -16,9 +15,9 @@ int GameServer::GameHandle(void)
         {
             order = onAIOption(mTurn);  // 由AI计算下一步
         }
-        else // 否则该回合是由玩家控制
+        else // 否则该回合是由人控制
         {
-            order = onPlayerOption(mTurn); // 由玩家决定下一步
+            order = onPlayerOption(mTurn); // 由人决定下一步
         }
 
         onExecuteOption(mTurn, order);
@@ -30,7 +29,7 @@ int GameServer::GameHandle(void)
             onGameWin(isEnd());
             isGameStart = false;
         }
-        mTurn = (++mTurn) % PLAYER_NUM; // 表示下一个回合
+        mTurn = (++mTurn) % PAWN_NUM; // 表示下一个回合
     }
 
     onGameOver();
@@ -58,15 +57,8 @@ GameAI* GameServer::getGameAI(int turn) const
     return mGameAI[turn];
 }
 
-void GameServer::setGameAI(int id, int depth, long time)
+void GameServer::setGameAI(int id, GameAI* ai)
 {
-    if (mGameAI[id] != nullptr) delete mGameAI[id];
-    mGameAI[id] = new GameAI(depth, id, time);
-}
-
-void GameServer::setGameAI(GameAI* ai)
-{
-    int id = ai->getSelfID();
     if (mGameAI[id] != nullptr) delete mGameAI[id];
     mGameAI[id] = ai;
 }
@@ -79,7 +71,7 @@ void GameServer::setGamePlayer(int id)
 
 void GameServer::resetGame(void)
 {
-    for (int index = 0; index < PLAYER_NUM; ++index)
+    for (int index = 0; index < PAWN_NUM; ++index)
     {
         if (mGameAI[index] != nullptr)
         {
@@ -87,7 +79,7 @@ void GameServer::resetGame(void)
             mGameAI[index] = nullptr;
         }
     }
-    GameData::resetGame();
+    GameData::resetGame(NUM_SQUARE);
     mTurn = 0;
     isGameStart = false;
 }
